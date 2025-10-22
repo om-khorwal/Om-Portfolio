@@ -13,7 +13,8 @@ export default function ContactPage() {
       <section>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Contact</h1>
         <p className="mt-2 opacity-80">
-          Tell me about your project—goals, timeline, and what success looks like. I’ll reply with next steps.
+          Tell me about your project—goals, timeline, and what success looks like.
+           I’ll reply with next steps.
         </p>
 
         <div className="mt-6 glass rounded-2xl p-6">
@@ -141,4 +142,3 @@ export default function ContactPage() {
     </main>
   );
 }
-    
