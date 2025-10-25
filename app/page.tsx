@@ -38,7 +38,7 @@ export default function HomePage() {
         <div className="grid sm:grid-cols-3 gap-4">
           {[
             { title: "Performance", desc: "Lighthouse 95+ targets, image & font optimizations." },
-            { title: "DX & UX", desc: "Clean architectures with delightful micro-interactions." },
+            { title: "UI & UX", desc: "Clean architectures with delightful micro-interactions." },
             { title: "Delivery", desc: "Clear milestones, changelogs, and zero-surprise launches." },
           ].map((f) => (
             <motion.div
