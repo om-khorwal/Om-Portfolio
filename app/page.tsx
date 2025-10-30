@@ -20,8 +20,7 @@ export default function HomePage() {
           </span>
         </motion.h1>
         <p className="mt-6 mx-auto max-w-2xl opacity-85 text-balance text-lg">
-          I craft fast, accessible, and elegant web experiences - focused on outcomes:
-          fewer clicks, faster loads, happier users.
+          I craft fast, accessible, and beautiful digital experiences — from websites to visuals to videos — all focused on results: smoother journeys, faster loads, happier users.
         </p>
 
         <div className="mt-10 flex justify-center gap-3">
