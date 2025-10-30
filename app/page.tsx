@@ -16,7 +16,7 @@ export default function HomePage() {
         >
           Om’s Portfolio
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-sky-400 to-emerald-400">
-            Design · Develop · Deploy
+            Design · Develop · Edit
           </span>
         </motion.h1>
         <p className="mt-6 mx-auto max-w-2xl opacity-85 text-balance text-lg">

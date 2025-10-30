@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -12,7 +11,7 @@ const projects = [
     summary:
       "QR-powered product tracking platform with role-based dashboards and blazing-fast performance.",
     metrics: ["-40% load time", "+99.9% uptime"],
-    link: "#",
+    link: "https://www.traceit.in", // ✅ add protocol
     image: "/p.png",
   },
   {
@@ -21,7 +20,7 @@ const projects = [
     summary:
       "A modern restaurant website featuring buttery animations, responsiveness and smooth scrolling.",
     metrics: ["Optimized assets", "Fast transitions"],
-    link: "#",
+    link: "#", // placeholder — will just point to same page
     image: "/TOM.png",
   },
   {
@@ -30,7 +29,7 @@ const projects = [
     summary:
       "Modern business website for a data consulting firm with clean design and structured content flow.",
     metrics: ["SEO-Ready", "Responsive design"],
-    link: "#",
+    link: "#", // placeholder — will just point to same page
     image: "/datamonk.png",
   },
 ];
@@ -75,7 +74,13 @@ export default function ProjectsPage() {
       {/* Web Development Section */}
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((p, i) => (
-          <Link key={p.title} href={p.link} className="block">
+          <a
+            key={p.title}
+            href={p.link}
+            className="block"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <motion.div
               className="group glass rounded-2xl p-5"
               initial={{ opacity: 0, y: 8 }}
@@ -109,7 +114,7 @@ export default function ProjectsPage() {
                 ))}
               </div>
             </motion.div>
-          </Link>
+          </a>
         ))}
       </section>
 
@@ -138,11 +143,12 @@ export default function ProjectsPage() {
           <p className="mt-4 font-medium text-fuchsia-300">
             👉 Visit my channel for more:{" "}
             <a
-              href="https://www.youtube.com/@Om_Khorwal "
+              href="https://www.youtube.com/@Om_Khorwal"
               target="_blank"
+              rel="noopener noreferrer"
               className="underline hover:text-fuchsia-400"
             >
-              Om's YouTube Channel
+              Om&apos;s YouTube Channel
             </a>
           </p>
         </div>
