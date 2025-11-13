@@ -7,20 +7,31 @@ import { AnimatePresence, motion } from "framer-motion";
 // ---- Data ----
 const designProjects = [
   {
-    title: "Taste-of-Marwad",
-    tag: "Next.js · Tailwind · GSAP",
-    summary: "Animated restaurant site with buttery scroll + responsive layouts.",
-    link: "#",
-    image: "/TOM.png",
-    badges: ["Optimized assets", "Fast transitions"],
+    title: "BMF — Buildmyflow",
+    tag: "UI/UX · Figma",
+    summary: "Design system and landing explorations.",
+    link: "https://www.figma.com/design/KahM52ankr6DGvXZJ7cpVF/BMF--Buildmyflow?node-id=0-1&p=f&t=f2X5gtpczITdhgyi-0",
+    figmaUrl:
+      "https://www.figma.com/design/KahM52ankr6DGvXZJ7cpVF/BMF--Buildmyflow?node-id=0-1&p=f&t=f2X5gtpczITdhgyi-0",
+    badges: ["Design system", "Landing UX"],
   },
   {
-    title: "Datamonk",
-    tag: "React · UI/UX",
-    summary: "Clean, SEO-friendly services website with clear content flow.",
-    link: "#",
-    image: "/datamonk.png",
-    badges: ["SEO-Ready", "Responsive"],
+    title: "OCS",
+    tag: "UI/UX · Figma",
+    summary: "Platform interface and interaction concepts.",
+    link: "https://www.figma.com/design/IKw4sk8SK2HbPCwNdsjxhX/OCS?node-id=0-1&p=f&t=N2R1Py8or1ZpioeN-0",
+    figmaUrl:
+      "https://www.figma.com/design/IKw4sk8SK2HbPCwNdsjxhX/OCS?node-id=0-1&p=f&t=N2R1Py8or1ZpioeN-0",
+    badges: ["Component-driven", "Prototypes"],
+  },
+  {
+    title: "Valutics — Landing Page",
+    tag: "Landing · Figma",
+    summary: "High-conversion hero + feature sections and responsive layouts.",
+    link: "https://www.figma.com/design/2SXZDIpUFvGNSk4MXdX7kl/Valutics-Landing-Page?node-id=0-1&p=f&t=7pegHWLfN1scSdKE-0",
+    figmaUrl:
+      "https://www.figma.com/design/2SXZDIpUFvGNSk4MXdX7kl/Valutics-Landing-Page?node-id=0-1&p=f&t=7pegHWLfN1scSdKE-0",
+    badges: ["Hero-focused", "Responsive"],
   },
 ];
 
@@ -117,7 +128,13 @@ export default function ProjectsPage() {
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
             >
               {designProjects.map((p, i) => (
-                <a key={p.title} href={p.link} target="_blank" rel="noopener noreferrer" className="block">
+                <a
+                  key={p.title}
+                  href={p.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
                   <motion.div
                     className="group glass rounded-2xl p-5 h-full"
                     initial={{ opacity: 0, y: 8 }}
@@ -127,12 +144,14 @@ export default function ProjectsPage() {
                     whileHover={{ y: -3 }}
                   >
                     <div className="relative aspect-video rounded-xl overflow-hidden mb-4">
-                      <Image
-                        src={p.image}
-                        alt={`${p.title} cover`}
-                        fill
-                        sizes="(min-width:1024px) 33vw, (min-width:768px) 50vw, 100vw"
-                        className="object-cover"
+                      {/* Figma embed preview */}
+                      <iframe
+                        src={`https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(
+                          p.figmaUrl
+                        )}`}
+                        title={`${p.title} — Figma preview`}
+                        className="w-full h-full border-0"
+                        allowFullScreen
                       />
                       <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
                     </div>
