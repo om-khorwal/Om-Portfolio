@@ -6,29 +6,27 @@ const links = {
   good: [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
-    { label: "Careers", href: "/careers" },
+    { label: "Contact", href: "/contact" },
+    { label: "Projects", href: "/projects" },
+    { label: "Blog", href: "/blog" },
   ],
   cool: [
-    { label: "Instagram", href: "https://instagram.com", external: true },
-    { label: "X.com", href: "https://x.com", external: true },
-  ],
-  boring: [
-    { label: "Terms of Service", href: "/legal/terms" },
-    { label: "Privacy Policy", href: "/legal/privacy" },
+    { label: "Instagram", href: "https://www.instagram.com/_om_khorwal/ ", external: true },
+    { label: "Youtube", href: "https://www.youtube.com/@Om_Khorwal", external: true },
+    { label: "Linkedin", href: "https://www.linkedin.com/in/om-khorwal-698281129/", external: true },
+    { label: "Anime (Ani-ike)", href: "https://anime.theokcompany.in", external: true },
   ],
 };
 
 export default function Footer() {
   return (
-    <footer className="relative mt-24 h-1/2">
-      {/* main footer container */}
+    <footer className="relative mt-24">
       <div className="relative mx-auto max-w-[80%] rounded-3xl bg-[#141414] text-slate-100 overflow-hidden">
-        {/* subtle top glow */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-white,transparent)]" />
 
-        {/* grid content */}
-        <div className="relative z-20 grid grid-cols-1 md:grid-cols-4 gap-8 px-6 py-14">
-          {/* Brand block */}
+        {/* content grid */}
+        <div className="relative z-20 grid grid-cols-1 md:grid-cols-3 gap-8 px-6 py-14">
+          
+          {/* Brand */}
           <div className="space-y-4">
             <div className="inline-block">
               <div className="text-sm uppercase tracking-widest text-white/70">theokcompany</div>
@@ -37,21 +35,27 @@ export default function Footer() {
             <p className="text-sm text-slate-300/90">
               theokcompany builds fast, elegant web apps and cinematic edits that turn ideas into outcomes.
             </p>
-            <p className="text-xs text-slate-400">© {new Date().getFullYear()} theokcompany</p>
+            <p className="text-xs text-slate-400">
+              © {new Date().getFullYear()} theokcompany
+            </p>
           </div>
 
-          {/* columns */}
           <FooterCol title="The Good" items={links.good} />
           <FooterCol title="The Cool" items={links.cool} />
-          <FooterCol title="The Boring" items={links.boring} />
         </div>
 
-        {/* big watermark text (behind and below all links) */}
-        <div
-          aria-hidden
-          className="pointer-events-none  text-[28vw] leading-none font-extrabold tracking-tight text-white/5 z-10 select-none text-center"
-        >
-          OK
+        {/* BIG WATERMARK WITH FADE */}
+        <div aria-hidden className="relative lg:h-[40vh] w-full flex justify-center select-none">
+          <div
+            className="
+              pointer-events-none 
+              text-[28vw] leading-none font-extrabold tracking-tight 
+              bg-gradient-to-b from-transparent via-black/50 to-[#161616]
+              text-transparent bg-clip-text
+              z-10 text-center relative"
+          >
+            OK
+          </div>
         </div>
       </div>
     </footer>

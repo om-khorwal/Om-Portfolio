@@ -27,7 +27,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <Header />
-        <main className="relative z-10 mx-auto w-[85%] px-4 pt-16">{children}</main>
+
+        {/* Responsive container:
+            - small screens: full-width with small padding
+            - md: constrained width with comfortable padding
+            - lg: max width (like 7xl) for very large screens
+         */}
+        <main className="relative z-10 mx-auto w-full px-4 pt-12 sm:px-6 md:pt-16 md:px-8 lg:pt-20 lg:max-w-5/6">
+          {children}
+        </main>
+
         <Footer />
         <Cursor />
       </body>

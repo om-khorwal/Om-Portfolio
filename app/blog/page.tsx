@@ -1,39 +1,47 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { getAllPosts } from "./posts";
 
-const posts = [
-  { title: "Animating with Purpose", date: "Oct 2025", excerpt: "Use motion to guide—not distract—users.", link: "#" },
-  { title: "From Brief to Launch", date: "Sep 2025", excerpt: "My 5-step delivery pipeline that avoids surprises.", link: "#" },
-  { title: "Tuning for 95+ Scores", date: "Aug 2025", excerpt: "Perf budgets, image strategy, and script discipline.", link: "#" },
-];
+const posts = getAllPosts();
 
-export default function BlogPage() {
+export default function BlogIndex() {
   return (
-    <main>
-      <header className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Blog</h1>
-        <p className="mt-2 opacity-80">upcoming</p>
+    <main className="relative z-10 mx-auto max-w-6xl px-4 py-12">
+      <header className="mb-8 text-center">
+        <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="text-3xl md:text-4xl font-extrabold">
+          Blog
+        </motion.h1>
+        <p className="mt-2 text-sm opacity-80">
+          Thoughts, ideas and breakdowns from my work.
+        </p>
       </header>
-{/* 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {posts.map((p, i) => (
-          <motion.a
-            key={p.title}
-            href={p.link}
-            className="glass rounded-2xl p-5 block"
-            initial={{ opacity: 0, y: 8 }}
+
+      <section className="grid gap-4">
+        {posts.map((post) => (
+          <motion.article
+            key={post.slug}
+            initial={{ opacity: 0, y: 6 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
+            className="glass rounded-2xl p-5"
           >
-            <div className="text-xs uppercase tracking-wide opacity-70">{p.date}</div>
-            <h3 className="mt-1 text-xl font-semibold">{p.title}</h3>
-            <p className="mt-2 opacity-80 text-sm">{p.excerpt}</p>
-            <span className="mt-4 inline-block text-sm opacity-90">Read →</span>
-          </motion.a>
+            <div className="text-xs opacity-70">{new Date(post.date).toLocaleDateString()}</div>
+            <h2 className="mt-1 text-lg font-semibold">
+              <Link href={`/blog/${post.slug}`} className="hover:underline">
+                {post.title}
+              </Link>
+            </h2>
+            <p className="mt-2 text-sm opacity-80">{post.excerpt}</p>
+
+            <div className="mt-3 text-sm underline opacity-75">
+              <Link href={`/blog/${post.slug}`}>Read article →</Link>
+            </div>
+          </motion.article>
         ))}
-      </div> */}
+      </section>
     </main>
   );
 }
