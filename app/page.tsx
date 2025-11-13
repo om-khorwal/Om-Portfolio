@@ -16,7 +16,7 @@ const projects = [
     desc: "QR-powered product tracking with role-based dashboards and real-time analytics.",
     href: "https://traceit.in",
     image: "/t.png",
-    external: true, // ✅ open in new tab
+    external: true,
   },
   {
     title: "Ani-ike (Anime Website)",
@@ -24,18 +24,17 @@ const projects = [
     desc: "Smooth anime info website with buttery scroll and responsive layouts.",
     href: "https://anime.theokcompany.in",
     image: "/a.png",
-    external: true, // ✅ open in new tab
+    external: true,
   },
   {
     title: "Livinnovate",
     tag: "React · UI/UX",
     desc: "Modern services site with clean structure, elegant UI, and strong SEO foundation.",
-    href: "https://www.livinnovate.com/", // optional if live
+    href: "https://www.livinnovate.com/",
     image: "/l.png",
-    external: true, // ✅ external link too
+    external: true,
   },
 ];
-
 
 export default function HomePage() {
   return (
@@ -44,21 +43,19 @@ export default function HomePage() {
 
       {/* ===== HERO ===== */}
       <section className="relative  z-10 mx-auto max-w-7xl px-4 pt-28 pb-20 text-center">
-       <video
+        <video
           className="absolute inset-0 -z-10 h-full w-full object-cover"
           autoPlay
           muted
           loop
           playsInline
-          poster=""         // fallback image
+          poster=""
         >
           <source src="/hero.mp4" type="video/mp4" />
         </video>
 
-        {/* soft overlay so text stays readable */}
         <div className="absolute inset-0 -z-10 bg-black/30" />
 
-        {/* your heading */}
         <motion.h1
           {...fadeUp}
           className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-tight tracking-tight"
@@ -94,7 +91,6 @@ export default function HomePage() {
           </Link>
         </motion.div>
 
-        {/* quick trust row */}
         <motion.ul
           {...fadeUp}
           transition={{ delay: 0.3, duration: 0.5 }}
@@ -132,10 +128,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== ABOUT (with image) ===== */}
+      {/* ===== ABOUT ===== */}
       <section className="relative z-10 mx-auto max-w-6xl px-4 pb-20">
         <div className="grid md:grid-cols-5 gap-6 items-center">
-          {/* photo */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -144,9 +139,10 @@ export default function HomePage() {
           >
             <div className="relative aspect-[4/5]">
               <Image
-                src="/r.jpg" 
+                src="/r.jpg"
                 alt="Om Khorwal portrait"
                 fill
+                unoptimized
                 sizes="(min-width:1024px) 40vw, 100vw"
                 className="object-cover"
                 priority
@@ -154,7 +150,6 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* text */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -164,8 +159,6 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold tracking-tight">About Me</h2>
             <p className="mt-3 opacity-85">
               I’m Om Khorwal - a software engineer who blends performance, design, and storytelling.
-              I scope, design, and ship end-to-end products with clean architecture, smooth motion,
-              and measurable impact.
             </p>
             <ul className="mt-4 grid sm:grid-cols-2 gap-2 text-sm opacity-85">
               <li>🧩 Full-stack: Next.js, Rails, Node</li>
@@ -185,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== FEATURED PROJECTS (with images) ===== */}
+      {/* ===== PROJECTS ===== */}
       <section className="relative z-10 mx-auto max-w-6xl px-4 pb-20">
         <div className="flex items-end justify-between mb-6">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Featured Work</h2>
@@ -205,12 +198,12 @@ export default function HomePage() {
                 whileHover={{ y: -3 }}
                 className="glass rounded-2xl p-5 h-full"
               >
-                {/* media */}
                 <div className="relative aspect-video mb-4 rounded-lg overflow-hidden">
                   <Image
                     src={p.image}
                     alt={`${p.title} cover`}
                     fill
+                    unoptimized
                     sizes="(min-width:1024px) 33vw, (min-width:768px) 50vw, 100vw"
                     className="object-cover"
                     priority={i === 0}
@@ -227,15 +220,8 @@ export default function HomePage() {
               </motion.div>
             );
 
-            // External vs internal link handling
             return p.external ? (
-              <a
-                key={p.title}
-                href={p.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block group"
-              >
+              <a key={p.title} href={p.href} target="_blank" rel="noopener noreferrer" className="block group">
                 {Card}
               </a>
             ) : (
@@ -274,8 +260,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-2xl font-bold tracking-tight">Let’s Build Something</h2>
               <p className="mt-2 opacity-80 text-sm">
-                Have a product in mind? I can scope, design, develop, and deploy — end-to-end. Clear communication,
-                measurable progress, and on-time delivery.
+                Have a product in mind? I can scope, design, develop, and deploy — end-to-end.
               </p>
             </div>
             <div className="mt-6">

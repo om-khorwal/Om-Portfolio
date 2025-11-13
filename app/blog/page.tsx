@@ -13,9 +13,9 @@ export default function BlogPage() {
     <main>
       <header className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Blog</h1>
-        <p className="mt-2 opacity-80">Short, practical notes from recent projects.</p>
+        <p className="mt-2 opacity-80">upcoming</p>
       </header>
-
+{/* 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {posts.map((p, i) => (
           <motion.a
@@ -33,7 +33,7 @@ export default function BlogPage() {
             <span className="mt-4 inline-block text-sm opacity-90">Read →</span>
           </motion.a>
         ))}
-      </div>
+      </div> */}
     </main>
   );
 }
