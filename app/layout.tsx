@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <Header />
-        <main className="relative z-10 mx-auto w-[85%] px-4">{children}</main>
+        <main className="relative z-10 mx-auto w-[85%] px-4 pt-16">{children}</main>
         <Footer />
         <Cursor />
       </body>

@@ -26,7 +26,7 @@ export default function Header() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/30 border-b border-white/10"
+      className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/30 border-b border-white/10 "
     >
       <div className="mx-auto max-w-6xl px-4 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
