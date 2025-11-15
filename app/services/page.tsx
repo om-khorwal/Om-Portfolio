@@ -107,8 +107,8 @@ export default function ServicesPage() {
       {/* INFOGRAPHIC ROW */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         <motion.div {...fade} className="glass rounded-2xl p-6 text-center">
-          <div className="text-3xl font-semibold">8+</div>
-          <div className="text-xs opacity-80 mt-1">Years of delivery</div>
+          <div className="text-3xl font-semibold">2+</div>
+          <div className="text-xs opacity-80 mt-1">Years of Experience</div>
         </motion.div>
 
         <motion.div {...fade} transition={{ delay: 0.03 }} className="glass rounded-2xl p-6 text-center">
