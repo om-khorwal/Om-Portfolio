@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             - md: constrained width with comfortable padding
             - lg: max width (like 7xl) for very large screens
          */}
-        <main className="relative z-10 mx-auto w-full px-4 pt-12 sm:px-6 md:pt-16 md:px-8 lg:pt-20 lg:max-w-5/6">
+        <main className="relative z-10 mx-auto w-full px-1 pt-12 sm:px-6 md:pt-16 md:px-8 lg:pt-10 lg:max-w-5/6">
           {children}
         </main>
 

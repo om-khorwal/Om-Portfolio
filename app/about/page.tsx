@@ -1,23 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
-const devSkills = [
-  "Next.js", "TypeScript", "React", "Node", "Postgres",
-  "Prisma", "Tailwind", "Framer Motion", "CI/CD", "Ruby on Rails",
+const core = [
+  { emoji: "🎨", title: "Design", desc: "Interfaces, flow, motion & clarity." },
+  { emoji: "🛠️", title: "Develop", desc: "Functional, smooth & reliable builds." },
+  { emoji: "☁️", title: "Deploy", desc: "Stable launches across devices & scale." },
 ];
 
-const videoSkills = [
-  "YouTube Editing", "Shorts/Reels", "Color Grading",
-  "Sound Design", "Motion Graphics", "Storytelling",
+const creative = [
+  { emoji: "🎬", title: "Video Editing", desc: "Cinematic pacing, rhythm & story." },
+  { emoji: "🎧", title: "Sound & Vibe", desc: "Music, effects & emotional tone." },
 ];
 
 const process = [
-  "Discovery",
-  "Design & Plan",
-  "Build",
-  "Edit & Refine",
+  "Discover",
+  "Plan",
+  "Create",
+  "Polish",
   "Launch",
 ];
 
@@ -27,81 +28,88 @@ export default function AboutPage() {
       {/* Intro */}
       <header>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">About</h1>
-        <p className="mt-2 opacity-80 max-w-2xl">
-          I’m Om (Thunder) — a full-stack developer and video editor.  
-          I design and build fast, interactive web apps and create cinematic edits for YouTube, vlogs, and short-form content.
+        <p className="mt-2 opacity-80 ">
+          I’m Om (Thunder) - I bring ideas to life end-to-end:
+          <strong> Design → Develop → Deploy</strong>. 
+          And beyond code, I also craft cinematic edits, content creation video editing and have a youtube channel as a creative side hobby.
         </p>
       </header>
 
-      {/* Skills */}
-      <section className="grid md:grid-cols-2 gap-4">
-        <motion.div
-          className="glass rounded-2xl p-6"
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-lg font-semibold">Web Development</h2>
-          <p className="mt-2 opacity-85">
-            I focus on clean code, speed, and smooth motion — building apps that are both functional and visually engaging.
-          </p>
-          <ul className="mt-3 flex flex-wrap gap-2 text-sm">
-            {devSkills.map((s) => (
-              <li key={s} className="px-2 py-1 rounded-lg border border-white/15">{s}</li>
-            ))}
-          </ul>
-        </motion.div>
-
-        <motion.div
-          className="glass rounded-2xl p-6"
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-lg font-semibold">Video Editing</h2>
-          <p className="mt-2 opacity-85">
-            I edit review videos, reels, and full vlogs — blending rhythm, pacing, and storytelling to bring ideas to life.
-          </p>
-          <ul className="mt-3 flex flex-wrap gap-2 text-sm">
-            {videoSkills.map((s) => (
-              <li key={s} className="px-2 py-1 rounded-lg border border-white/15">{s}</li>
-            ))}
-          </ul>
-          <div className="mt-4 flex gap-3">
-            <Link href="/projects" className="glass rounded-xl px-3 py-2 text-sm hover:opacity-90 transition">
-              View Projects
-            </Link>
-            <a
-              href="https://www.youtube.com/@Om_Khorwal"
-              target="_blank"
-              className="rounded-xl border border-white/15 px-3 py-2 text-sm hover:bg-white/5 transition"
-            >
-              YouTube Channel
-            </a>
-          </div>
-        </motion.div>
+      {/* Core Capabilities */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {core.map((c, i) => (
+          <motion.div
+            key={c.title}
+            initial={{ opacity: 0, y: 6 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.05 }}
+            className="glass rounded-2xl p-5 text-center flex flex-col items-center"
+          >
+            <div className="text-3xl">{c.emoji}</div>
+            <h3 className="mt-3 font-semibold text-lg">{c.title}</h3>
+            <p className="text-sm opacity-75 mt-1">{c.desc}</p>
+          </motion.div>
+        ))}
       </section>
 
-      {/* Process */}
-      <section className="glass rounded-2xl p-6">
-        <h2 className="text-lg font-semibold mb-3">Process</h2>
-        <ol className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
-          {process.map((step, i) => (
-            <motion.li
-              key={step}
-              className="rounded-xl border border-white/10 px-3 py-3"
+      {/* Creative Hobby (Video Editing) */}
+      <section>
+        <h2 className="text-lg font-semibold opacity-90">Creative Side - Video Editing</h2>
+        <p className="mt-2 opacity-80">
+          Editing is my craft outside development - a place where I explore timing, rhythm,
+          color, and storytelling through visuals.
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
+          {creative.map((c, i) => (
+            <motion.div
+              key={c.title}
               initial={{ opacity: 0, y: 6 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
+              className="glass rounded-xl p-3 text-center"
             >
-              <div className="text-sm opacity-70">Step {i + 1}</div>
+              <div className="text-2xl">{c.emoji}</div>
+              <div className="text-sm mt-2 font-medium">{c.title}</div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-4">
+          <a
+            href="https://www.youtube.com/@Om_Khorwal"
+            target="_blank"
+            className="rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5 transition"
+          >
+            Visit YouTube Channel
+          </a>
+        </div>
+      </section>
+
+      {/* Process Block (infographic) */}
+      <section className="glass rounded-2xl p-6">
+        <h2 className="text-lg font-semibold mb-3">How I Work</h2>
+
+        <ol className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+          {process.map((step, i) => (
+            <motion.li
+              key={step}
+              initial={{ opacity: 0, y: 6 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.04 }}
+              className="rounded-xl border border-white/10 px-3 py-3"
+            >
+              <div className="text-xs opacity-70">Step {i + 1}</div>
               <div className="font-medium">{step}</div>
             </motion.li>
           ))}
         </ol>
-        <p className="mt-4 opacity-80 text-sm text-center">
-          Each project — web or video — follows a clear process from concept to launch, ensuring speed, quality, and creativity.
+
+        <p className="mt-4 opacity-75 text-xs sm:text-sm text-center">
+          A simple, repeatable workflow - from idea to execution, code or video.
         </p>
       </section>
 
@@ -109,9 +117,10 @@ export default function AboutPage() {
       <section className="glass rounded-2xl p-6">
         <h2 className="text-lg font-semibold">Let’s Work Together</h2>
         <p className="mt-2 opacity-85">
-          Need a stunning website or a crisp video edit?  
-          I combine design, code, and storytelling to craft impactful digital experiences.
+          Need a product, a landing page, or a sharp video edit?  
+          I help bring ideas to life - polished, fast, and expressive.
         </p>
+
         <div className="mt-4 flex gap-3">
           <Link href="/contact" className="glass rounded-xl px-4 py-2 text-sm hover:opacity-90 transition">
             Contact Me

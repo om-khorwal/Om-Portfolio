@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,66 +10,34 @@ const fade = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.45 } },
 };
 
-const services = [
+const offerings = [
   {
-    id: "fullstack",
-    title: "Full-stack Development",
-    subtitle: "Next.js, React, Rails, Node - robust, maintainable, scalable",
-    bullets: [
-      "Product-first architecture (domain models & flows)",
-      "Fast, accessible UIs with solid test coverage",
-      "APIs, background jobs, and predictable data pipelines",
-    ],
-    // icon key used below
+    id: "product",
+    title: "Product & Engineering",
+    tag: "Reliable product outcomes",
+    short: "From brief → preview → launch",
     icon: "code",
   },
   {
-    id: "deploy",
-    title: "Deployment & Infra",
-    subtitle: "Vercel, AWS - CI/CD, scaling, monitoring",
-    bullets: [
-      "Automated CI/CD + preview deployments",
-      "Horizontal scaling, caching, and cost optimisations",
-      "SRE-ready observability: logging, alerts, runbooks",
-    ],
+    id: "ops",
+    title: "Deploy & Operate",
+    tag: "Keep it healthy",
+    short: "Previews, monitoring, rollbacks",
     icon: "cloud",
   },
   {
-    id: "design",
-    title: "Design & Web Graphics",
-    subtitle: "UI, branding, component systems, marketing assets",
-    bullets: [
-      "Design systems & responsive layouts (Figma → code)",
-      "High-impact hero graphics, icons & thumbnails",
-      "Exportable assets for web, social and motion",
-    ],
+    id: "brand",
+    title: "Design & Brand",
+    tag: "Clarity-first visuals",
+    short: "Reusable UI & marketing assets",
     icon: "pen",
   },
   {
     id: "video",
-    title: "Video Editing",
-    subtitle: "Reels, promos, vlogs - storytelling with motion",
-    bullets: [
-      "Short-form (reels) and long-form (vlogs) editing",
-      "Color grading, sound design, captions & hooks",
-      "Delivery-optimised formats for social platforms",
-    ],
+    title: "Creative Edits",
+    tag: "Story-led edits",
+    short: "Reels, promos, platform-ready",
     icon: "play",
-  },
-];
-
-const caseStudies = [
-  {
-    title: "TraceIT - Product Tracking",
-    desc: "Role-based dashboards, QR flows, analytics; built on Rails + AWS.",
-    href: "https://traceit.in",
-    img: "/t.png",
-  },
-  {
-    title: "Ani-ike - Anime Site",
-    desc: "Curated episode lists, buttery scrolls and responsive UI (Next.js).",
-    href: "https://anime.theokcompany.in",
-    img: "/a.png",
   },
 ];
 
@@ -125,174 +94,90 @@ function Icon({ name }: { name: string }) {
 export default function ServicesPage() {
   return (
     <main className="relative z-10 mx-auto max-w-6xl px-4 py-12 md:py-16 lg:py-20">
-      {/* HERO */}
+      {/* HERO (short & visual) */}
       <section className="text-center mb-10 md:mb-14">
         <motion.h1 {...fade} className="text-3xl sm:text-4xl md:text-5xl font-extrabold">
-          Services - Build, Design, Deploy
+          Services — Build, Polish, Launch
         </motion.h1>
-        <motion.p {...fade} transition={{ delay: 0.08 }} className="mt-4 max-w-2xl mx-auto opacity-80 text-sm md:text-base">
-          I ship end-to-end digital products: full-stack apps, pixel-perfect design and high-quality video edits.
-          I’ll scope the work, design for your users, build with maintainability in mind, and deploy with reliability.
+        <motion.p {...fade} transition={{ delay: 0.06 }} className="mt-4 max-w-2xl mx-auto opacity-80 text-sm md:text-base">
+          I help teams turn ideas into impact — product, operations, brand and short-form edits.
         </motion.p>
+      </section>
 
-        <motion.div {...fade} transition={{ delay: 0.16 }} className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
-          <Link href="/contact" className="glass px-4 py-2 rounded-xl text-sm md:text-base">
-            Start a Project
-          </Link>
-          <a href="#casestudies" className="px-4 py-2 rounded-xl border border-white/10 text-sm md:text-base hover:bg-white/5 transition">
-            See case studies
-          </a>
+      {/* INFOGRAPHIC ROW */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        <motion.div {...fade} className="glass rounded-2xl p-6 text-center">
+          <div className="text-3xl font-semibold">8+</div>
+          <div className="text-xs opacity-80 mt-1">Years of delivery</div>
+        </motion.div>
+
+        <motion.div {...fade} transition={{ delay: 0.03 }} className="glass rounded-2xl p-6 text-center">
+          <div className="text-3xl font-semibold">50+</div>
+          <div className="text-xs opacity-80 mt-1">Projects shipped</div>
+        </motion.div>
+
+        <motion.div {...fade} transition={{ delay: 0.06 }} className="glass rounded-2xl p-6 text-center">
+          <div className="text-3xl font-semibold">Fast</div>
+          <div className="text-xs opacity-80 mt-1">Preview-driven iterations</div>
         </motion.div>
       </section>
 
-      {/* SERVICE GRID (icons instead of images) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {services.map((s, i) => (
+      {/* OFFERINGS — responsive visual tiles */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
+        {offerings.map((o, i) => (
           <motion.article
-            key={s.id}
-            initial={{ opacity: 0, y: 10 }}
+            key={o.id}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.06 }}
-            className="glass rounded-2xl p-5 md:p-6 flex flex-col md:flex-row gap-4 items-stretch"
+            transition={{ delay: i * 0.04 }}
+            className="glass rounded-2xl p-5 md:p-6 flex items-center gap-4 md:gap-5"
           >
-            {/* ICON (replaces image) */}
-            <div className="flex items-start">
-              <Icon name={s.icon} />
+            <Icon name={o.icon} />
+            <div className="flex-1">
+              <div className="text-base md:text-lg font-semibold">{o.title}</div>
+              <div className="text-xs md:text-sm opacity-75 mt-1">{o.tag}</div>
             </div>
-
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg md:text-xl font-semibold">{s.title}</h3>
-                <div className="text-sm opacity-75 mt-1">{s.subtitle}</div>
-
-                <ul className="mt-3 grid gap-2 text-sm">
-                  {s.bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-3">
-                      <span className="text-fuchsia-300 mt-0.5 text-lg">•</span>
-                      <span className="opacity-85">{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-4 flex items-center gap-3">
-                <Link href="/contact" className="glass px-3 py-2 rounded-md text-sm md:text-base">
-                  Get started
-                </Link>
-                <Link href="/projects" className="text-sm opacity-80 hover:opacity-100 underline underline-offset-4">
-                  See projects →
-                </Link>
-              </div>
-            </div>
+            <div className="text-[10px] md:text-xs opacity-70 text-right hidden sm:block">{o.short}</div>
           </motion.article>
         ))}
       </section>
 
-      {/* HOW I WORK - tailored for each service */}
-      <section className="mb-10">
-        <motion.h2 {...fade} className="text-2xl md:text-3xl font-bold mb-4">How I work - by service</motion.h2>
+      {/* CASE STUDIES — responsive */}
+      <section id="casestudies" className="mb-12">
+        <motion.h2 {...fade} className="text-xl md:text-2xl font-bold mb-4">Selected work</motion.h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <a href="https://traceit.in" target="_blank" rel="noreferrer" className="group glass rounded-2xl overflow-hidden flex items-center justify-between p-4 md:p-5">
+            <div>
+              <div className="text-xs uppercase opacity-60">Case</div>
+              <div className="font-semibold text-sm md:text-base">TraceIT</div>
+              <div className="text-xs opacity-75 mt-1">Faster ops with focused dashboards</div>
+            </div>
+            <div className="relative w-24 h-16 md:w-28 md:h-20">
+              <Image src="/t.png" alt="TraceIT" fill unoptimized className="object-cover" />
+            </div>
+          </a>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Full-stack + Deployment combined flow */}
-          <div className="glass rounded-2xl p-5">
-            <h4 className="font-semibold">Full-stack Development & Deployment</h4>
-            <ol className="mt-3 text-sm space-y-3 list-decimal list-inside">
-              <li><strong>Discovery:</strong> Requirements, user flows, data modelling and acceptance criteria.</li>
-              <li><strong>Design → API contract:</strong> Wireframes, API spec, and component checklist.</li>
-              <li><strong>Iterative sprints:</strong> Frontend, API, background jobs; CI runs on each PR.</li>
-              <li><strong>Previews & QA:</strong> Preview deployments for stakeholders + automated tests.</li>
-              <li><strong>Production launch:</strong> Promote, enable monitoring, health checks and rollback plan.</li>
-            </ol>
-            <div className="mt-4 text-xs opacity-75">Deliverables: repo, CI, infra-as-code, runbook.</div>
-          </div>
-
-          {/* Design */}
-          <div className="glass rounded-2xl p-5">
-            <h4 className="font-semibold">Design & Web Graphics</h4>
-            <ol className="mt-3 text-sm space-y-3 list-decimal list-inside">
-              <li><strong>Brand check:</strong> Tone, colors, and existing assets audit.</li>
-              <li><strong>Component-driven UI:</strong> Figma library, responsive tokens, and a style guide.</li>
-              <li><strong>High-impact assets:</strong> Hero art, icons, thumbnails and social cutdowns.</li>
-              <li><strong>Handoff:</strong> Export-ready assets, CSS tokens, and developer specs.</li>
-            </ol>
-            <div className="mt-4 text-xs opacity-75">Deliverables: Figma file, SVG/PNG assets, token list.</div>
-          </div>
-
-          {/* Video */}
-          <div className="glass rounded-2xl p-5">
-            <h4 className="font-semibold">Video Editing</h4>
-            <ol className="mt-3 text-sm space-y-3 list-decimal list-inside">
-              <li><strong>Storyboard & brief:</strong> Outline beats, tone, and platform (reel / YT / long-form).</li>
-              <li><strong>Rough cut:</strong> Structure + pacing for stakeholder feedback.</li>
-              <li><strong>Fine cut:</strong> Color grade, audio, captions and motion polish.</li>
-              <li><strong>Delivery:</strong> Multiple formats & aspect ratios, export presets for platforms.</li>
-            </ol>
-            <div className="mt-4 text-xs opacity-75">Deliverables: MP4/WebM sources, thumbnails, captions (SRT).</div>
-          </div>
+          <a href="https://anime.theokcompany.in" target="_blank" rel="noreferrer" className="group glass rounded-2xl overflow-hidden flex items-center justify-between p-4 md:p-5">
+            <div>
+              <div className="text-xs uppercase opacity-60">Case</div>
+              <div className="font-semibold text-sm md:text-base">Ani-ike</div>
+              <div className="text-xs opacity-75 mt-1">Fast, delightful browsing</div>
+            </div>
+            <div className="relative w-24 h-16 md:w-28 md:h-20">
+              <Image src="/a.png" alt="Ani-ike" fill unoptimized className="object-cover" />
+            </div>
+          </a>
         </div>
       </section>
 
-      {/* CASE STUDIES */}
-      <section id="casestudies" className="mb-10">
-        <motion.h2 {...fade} className="text-2xl md:text-3xl font-bold mb-4">Selected work</motion.h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {caseStudies.map((c, i) => (
-            <motion.a
-              key={c.title}
-              href={c.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group glass rounded-2xl overflow-hidden"
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.04 }}
-            >
-              <div className="relative aspect-video">
-                <Image src={c.img} alt={`${c.title} cover`} fill unoptimized className="object-cover" />
-              </div>
-              <div className="p-4">
-                <div className="text-xs uppercase opacity-70">{i === 0 ? "Ruby on Rails · AWS" : "Next.js · Tailwind"}</div>
-                <h3 className="mt-1 text-lg font-semibold">{c.title}</h3>
-                <p className="mt-2 text-sm opacity-80">{c.desc}</p>
-              </div>
-            </motion.a>
-          ))}
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="mb-10">
-        <motion.h2 {...fade} className="text-2xl md:text-3xl font-bold mb-4">FAQ</motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="glass rounded-2xl p-4">
-            <h4 className="font-semibold">How do you charge?</h4>
-            <p className="mt-2 text-sm opacity-80">I prefer fixed-scope proposals for product work and per-project pricing for video/design. We scope first, then agree on milestones.</p>
-          </div>
-          <div className="glass rounded-2xl p-4">
-            <h4 className="font-semibold">Do you provide design handoffs?</h4>
-            <p className="mt-2 text-sm opacity-80">Yes - Figma libraries, exported assets and dev-ready specs are included in delivery for design & UI work.</p>
-          </div>
-          <div className="glass rounded-2xl p-4">
-            <h4 className="font-semibold">Can you operate as long-term support?</h4>
-            <p className="mt-2 text-sm opacity-80">Yes - I offer retainer packages for maintenance, monitoring, and feature sprints after launch.</p>
-          </div>
-          <div className="glass rounded-2xl p-4">
-            <h4 className="font-semibold">What I need to start?</h4>
-            <p className="mt-2 text-sm opacity-80">A short brief (objectives, users, references) and access to any existing assets or repos. I'll handle the rest.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
+      {/* CTA — responsive */}
       <section className="mb-16">
         <motion.div {...fade} className="glass rounded-2xl p-6 md:p-8 text-center">
-          <h3 className="text-xl md:text-2xl font-semibold">Ready to build?</h3>
-          <p className="mt-2 text-sm md:text-base opacity-80">Let's scope your idea and ship a product your users love.</p>
-          <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/contact" className="glass px-4 py-2 rounded-xl">Start a Project</Link>
+          <h3 className="text-lg md:text-xl font-semibold">Ready to start?</h3>
+          <p className="mt-2 text-xs md:text-sm opacity-80 max-w-md mx-auto">Share a brief — I’ll scope and propose a plan.</p>
+          <div className="mt-4 flex justify-center">
+            <Link href="/contact" className="glass px-4 py-2 rounded-lg text-sm md:text-base">Get in touch</Link>
           </div>
         </motion.div>
       </section>

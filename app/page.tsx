@@ -28,7 +28,7 @@ const projects = [
   },
   {
     title: "Livinnovate",
-    tag: "React · UI/UX",
+    tag: "React · Fastapi",
     desc: "Modern services site with clean structure, elegant UI, and strong SEO foundation.",
     href: "https://www.livinnovate.com/",
     image: "/l.png",
@@ -38,7 +38,7 @@ const projects = [
 
 export default function HomePage() {
   return (
-    <main className="relative overflow-hidden border-x border-gray-800 py-12 md:py-16 lg:py-20">
+    <main className="relative overflow-hidden border-x border-gray-800 py-12 md:py-10 lg:py-12">
       <div className="absolute inset-0 bg-mesh opacity-40 pointer-events-none " />
 
       {/* ===== HERO ===== */}
@@ -54,7 +54,7 @@ export default function HomePage() {
           <source src="/hero.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 -z-10 bg-black/30" />
+        <div className="absolute inset-0 -z-10 " />
 
         <motion.h1
           {...fadeUp}
@@ -99,7 +99,7 @@ export default function HomePage() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm md:text-base opacity-75"
         >
-          <li>Next.js · Rails · AWS</li>
+          <li>Next.js · Rails · Python</li>
           <span className="opacity-40">•</span>
           <li>Lighthouse 95+ targets</li>
           <span className="opacity-40">•</span>
@@ -164,14 +164,12 @@ export default function HomePage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight">About Me</h2>
               <p className="mt-3 opacity-85 text-sm md:text-base">
-                I’m Om Khorwal - a software engineer who blends performance, design, and storytelling.
+                I’m Om Khorwal - a builder who blends speed, design, and clarity.  
+                I craft digital experiences that feel modern, smooth, and intentional -
+                from product flows to visuals and motion. My focus is simple: clean execution
+                and meaningful impact.
               </p>
-              <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm md:text-base opacity-85">
-                <li> Full-stack: Next.js, Rails, Node</li>
-                <li> Deployments: Vercel, AWS</li>
-                <li> Video: Reels, vlogs, edits</li>
-                <li> Targets: Lighthouse 95+, P99 {"<"} 300ms</li>
-              </ul>
+        
             </div>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -280,86 +278,155 @@ export default function HomePage() {
       </section>
 
       {/* ===== SERVICES + CTA ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-16 md:pb-20 lg:pb-28">
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-16 md:pb-10 lg:pb-8">
+  <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
 
     {/* ---- WHAT I DO ---- */}
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="glass rounded-2xl p-5 md:p-6 lg:p-7"
-    >
-      <h2 className="text-2xl md:text-3xl font-bold tracking-tight">What I Do</h2>
-      <p className="mt-2 text-sm md:text-base opacity-80">
-        I help founders, brands, and teams build fast, polished, and scalable digital experiences.
+  initial={{ opacity: 0, y: 8 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  className="glass rounded-2xl p-5 md:p-6 lg:p-7 w-full "
+>
+  <h2 className="text-2xl md:text-3xl font-bold tracking-tight">What I Do</h2>
+  <p className="mt-2 text-sm md:text-base opacity-80">
+    I help founders and teams bring ideas to life - fast, polished, and end-to-end.
+  </p>
+
+  <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-sm md:text-base">
+    {/* Web Apps */}
+    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
+      <span className="text-xl">🖥️</span>
+      <span className="font-semibold">Web Experiences</span>
+      <p className="text-xs md:text-sm opacity-70">
+        Fast, modern, and smooth - built for real users.
       </p>
+    </li>
 
-      <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-sm md:text-base">
-        <li className="rounded-xl border border-white/10 p-3">
-          <span className="font-semibold">🖥️ Web Apps</span>
-          <p className="text-xs md:text-sm opacity-70 mt-1">
-            Next.js, React — fast, SEO-friendly, and built with clean architecture.
-          </p>
-        </li>
+    {/* Backends */}
+    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
+      <span className="text-xl">⚙️</span>
+      <span className="font-semibold">Systems & Logic</span>
+      <p className="text-xs md:text-sm opacity-70">
+        Reliable data flows, automation, and dashboards.
+      </p>
+    </li>
 
-        <li className="rounded-xl border border-white/10 p-3">
-          <span className="font-semibold">⚙️ Backends</span>
-          <p className="text-xs md:text-sm opacity-70 mt-1">
-            Rails, Node — secure APIs, dashboards, and real-world data workflows.
-          </p>
-        </li>
+    {/* Deployments */}
+    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
+      <span className="text-xl">☁️</span>
+      <span className="font-semibold">Deployments</span>
+      <p className="text-xs md:text-sm opacity-70">
+        Stable launches with monitoring & scalability.
+      </p>
+    </li>
 
-        <li className="rounded-xl border border-white/10 p-3">
-          <span className="font-semibold">☁️ Deployments</span>
-          <p className="text-xs md:text-sm opacity-70 mt-1">
-            Vercel, AWS — CI/CD, scaling strategies, uptime monitoring.
-          </p>
-        </li>
-
-        <li className="rounded-xl border border-white/10 p-3">
-          <span className="font-semibold">🎬 Cinematic Edits</span>
-          <p className="text-xs md:text-sm opacity-70 mt-1">
-            Reels, vlogs, promos — motion-focused storytelling for brands.
-          </p>
-        </li>
-      </ul>
-    </motion.div>
-
-    {/* ---- CTA CARD ---- */}
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="glass rounded-2xl p-5 md:p-6 lg:p-7 flex flex-col justify-between"
-    >
-      <div>
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Let’s Build Something</h2>
-        <p className="mt-2 opacity-80 text-sm md:text-base">
-          Whether you need a production-ready app, a sleek landing page, or a cinematic promo —
-          I work end-to-end: strategy → design → development → deployment.
-        </p>
-
-        <ul className="mt-4 space-y-2 text-sm md:text-base opacity-80">
-          <li>• Fast communication, clear milestones</li>
-          <li>• Clean, scalable codebases</li>
-          <li>• Pixel-perfect design to development</li>
-          <li>• Performance first (Lighthouse 95+)</li>
-        </ul>
-      </div>
-
-      <div className="mt-6">
-        <Link
-          href="/contact"
-          className="glass px-4 py-2 md:px-5 md:py-2.5 rounded-xl hover:opacity-90 transition text-sm md:text-base text-center"
-        >
-          Start a Project
-        </Link>
-      </div>
-    </motion.div>
+    {/* Video Editing */}
+    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
+      <span className="text-xl">🎬</span>
+      <span className="font-semibold">Cinematic Edits</span>
+      <p className="text-xs md:text-sm opacity-70">
+        Reels, vlogs & promos with sharp storytelling.
+      </p>
+    </li>
+  </ul>
+</motion.div>
 
   </div>
 </section>
+{/* ===== TECH LOGOS (compact infographic style) ===== */}
+<section className="relative z-10 mx-auto max-w-6xl px-4 pb-10 md:pb-16 lg:pb-10  pt-8">
+  <div className="glass rounded-2xl p-5 md:p-6 lg:p-8 bg-white border-t ">
+    <h3 className="text-lg md:text-xl font-semibold">Tech I Work With</h3>
+    <p className="mt-2 text-sm md:text-base opacity-75">Tools & platforms I use to ship reliable products.</p>
+
+    {/* grid of many small logos */}
+    <div className="mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 items-center">
+  {[
+    { name: "javascript" },
+    { name: "nextdotjs" },
+    { name: "react" },
+    { name: "nodedotjs" },
+    { name: "express" },
+    { name: "rubyonrails" },
+    { name: "python" },
+    { name: "fastapi" },
+    {
+      name: "amazonaws",
+      icon: "https://cdn.jsdelivr.net/npm/simple-icons/icons/amazonaws.svg"
+    },
+    { name: "cloudinary" },
+    { name: "docker" },
+    { name: "vue.js" },
+    { name: "framer" },
+    { name: "tailwindcss" },
+    { name: "bootstrap" },
+    { name: "postgresql" },
+    { name: "mysql" },
+    { name: "mongodb" },
+  ].map((t) => (
+    <a
+      key={t.name}
+      href="#"
+      target="_blank"
+      className="flex items-center justify-center p-2 rounded-lg hover:scale-110 transition-transform duration-300"
+      title={t.name}
+    >
+      <img
+        src={t.icon ?? `https://cdn.simpleicons.org/${t.name}`}
+        alt={t.name}
+        loading="lazy"
+        className="h-10 w-10 opacity-80 hover:opacity-100 "
+      />
+    </a>
+  ))}
+</div>
+
+
+    {/* CTA row with featured platform logos */}
+    <div className="mt-6 border-t border-white/8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <span className="text-sm opacity-80">Featured:</span>
+        {[
+          { name: "nextdotjs", href: "https://nextjs.org" },
+          {
+            name: "amazonaws",
+            icon: "https://cdn.jsdelivr.net/npm/simple-icons/icons/amazonaws.svg"
+          },
+          { name: "cloudinary", href: "https://cloudinary.com" },
+          { name: "docker", href: "https://www.docker.com" },
+        ].map((t) => (
+          <a key={t.name} href={t.href} target="_blank" rel="noopener noreferrer" className="p-1 rounded-md">
+            <img
+              src={t.icon ??`https://cdn.simpleicons.org/${t.name}`}
+              alt={t.name}
+              loading="lazy"
+              className="h-8 w-8 opacity-90"
+              width={32}
+              height={32}
+            />
+          </a>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-3">
+        <a
+          href="/contact"
+          className="inline-block px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition text-sm"
+        >
+          Hire me
+        </a>
+        <a
+          href="/projects"
+          className="inline-block px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 transition text-sm"
+        >
+          See case studies
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 
     </main>
   );
