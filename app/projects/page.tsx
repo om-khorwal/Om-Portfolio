@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import { summary } from "framer-motion/client";
 
 // ---- DESIGN PROJECTS ----
 const designProjects = [
@@ -41,6 +42,22 @@ const devProjects = [
     link: "https://www.traceit.in",
     image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763099904/t_bggdu4.png",
     badges: ["-40% load time", "+99.9% uptime"],
+  },
+  {
+    title: "DataMonk",
+    tag: "Next.js · Tailwind CSS · Framer Motion",
+    summary: "Datamonk official business website with SEO optimizations.",
+    link: "https://www.datamonk.dev",
+    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763631076/5f77e88e-b2c2-4f88-9297-a4fe0a25121a.png",
+    badges: ["Modern Website",],
+  },
+  {
+    title: "Livinnovate",
+    tag: "React · Fastapi",
+    summary: "Website with clean structure, elegant UI, and strong SEO.",
+    href: "https://www.livinnovate.com/",
+    image: "/l.png",
+    badges: ["Clear & Scalable code",],
   },
 ];
 
