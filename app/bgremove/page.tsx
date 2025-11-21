@@ -50,7 +50,8 @@ export default function BgRemove() {
 
     const w = img.naturalWidth || 800;
     const h = img.naturalHeight || 600;
-    const maxDisplayW = 820;
+    // increased max width for larger breakpoints
+    const maxDisplayW = 1200;
 
     b.width = m.width = d.width = w;
     b.height = m.height = d.height = h;
@@ -88,7 +89,6 @@ export default function BgRemove() {
     try {
       const form = new FormData();
       form.append("file", file);
-      // use template literal so API value is actually interpolated
       console.log("Sending request to API at:", API);
       const resp = await fetch(`${API}/remove-bg`, { method: "POST", body: form });
       if (!resp.ok) throw new Error(await resp.text());
@@ -276,7 +276,6 @@ export default function BgRemove() {
       const form = new FormData();
       form.append("file", fileRef.current);
       form.append("mask", maskBlob, "mask.png");
-      // fixed template literal here too
       const resp = await fetch(`${API}/remove-bg-refine`, { method: "POST", body: form });
       if (!resp.ok) throw new Error(await resp.text());
       const out = await resp.blob();
@@ -305,15 +304,15 @@ export default function BgRemove() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0b0b] p-6 flex flex-col gap-6">
-      {/* Compact header */}
-      <header className="w-full max-w-7xl mx-auto glass rounded-lg shadow-lg px-6 py-6 flex items-start justify-between gap-6">
+    <div className="min-h-screen bg-[#0b0b0b] p-4 md:p-6 lg:p-10 flex flex-col gap-6">
+      {/* Compact header: stacks on mobile, row on md+ */}
+      <header className="w-full max-w-7xl mx-auto glass rounded-lg shadow-lg px-4 py-5 md:px-6 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         {/* Left: Title + written content */}
         <div className="flex-1 min-w-0">
-          <h1 className="animated-gradient text-3xl font-extrabold leading-tight mb-2">
+          <h1 className="animated-gradient text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-2 text-white">
             Remove image backgrounds — editable mask
           </h1>
-          <p className="mt-1 text-sm text-gray-300 max-w-2xl">
+          <p className="mt-1 text-xs sm:text-sm md:text-sm text-gray-300 max-w-2xl">
             Upload an image and the server will automatically remove the background. Refine the result with
             the pencil (keep) and eraser (remove) tools, then click <span className="font-semibold">Refine</span> to
             produce a production-ready transparent PNG.
@@ -339,8 +338,8 @@ export default function BgRemove() {
           <p className="mt-3 text-xs text-gray-400">Tip: Use a smaller brush for hair/fur and fine edges.</p>
         </div>
 
-        {/* Right: actions (keeps behavior, no extra options) */}
-        <div className="flex-shrink-0 flex flex-col items-stretch gap-3">
+        {/* Right: actions */}
+        <div className="flex-shrink-0 flex flex-row md:flex-col items-stretch gap-3">
           <button
             onClick={() => {
               const inp = document.querySelector('input[type="file"]') as HTMLInputElement | null;
@@ -352,15 +351,14 @@ export default function BgRemove() {
           >
             Upload image
           </button>
-
         </div>
       </header>
 
-      {/* Main horizontal area: editor (left) + result (right) */}
-      <main className="w-full max-w-7xl mx-auto bg-gradient-to-br from-white/4 to-white/6 rounded-2xl p-4 border border-white/6 shadow-lg flex gap-6">
-        {/* Left: controls + canvas */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-3">
+      {/* Main area: becomes two-column on md+ */}
+      <main className="w-full max-w-7xl mx-auto bg-gradient-to-br from-white/4 to-white/6 rounded-2xl p-4 md:p-6 border border-white/6 shadow-lg flex flex-col md:flex-row gap-6">
+        {/* Left: controls + canvas (grow) */}
+        <div className="flex-1 min-w-0 order-2 md:order-1">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded bg-[#101010] cursor-pointer border border-white/6">
               <input
                 type="file"
@@ -375,19 +373,36 @@ export default function BgRemove() {
               <span className="text-sm text-gray-200">Upload</span>
             </label>
 
-            <button onClick={() => clearMask()} className="inline-flex items-center gap-2 px-3 py-2 rounded bg-[#141414] text-gray-200 border border-white/6 ml-2">
+            <button onClick={() => clearMask()} className="inline-flex items-center gap-2 px-3 py-2 rounded bg-[#141414] text-gray-200 border border-white/6 ml-0 sm:ml-2">
               Clear
             </button>
 
             <div className="ml-auto flex items-center gap-4 text-sm text-gray-300">
-              <label>Brush</label>
-              <input type="range" min={4} max={200} value={brush} onChange={(e) => setBrush(Number(e.target.value))} />
+              <label className="hidden sm:block">Brush</label>
+              <input
+                type="range"
+                min={4}
+                max={200}
+                value={brush}
+                onChange={(e) => setBrush(Number(e.target.value))}
+                className="w-36 sm:w-48"
+              />
               <div className="text-xs text-gray-300 w-14 text-right">{brush}px</div>
             </div>
           </div>
 
-          <div className="relative border border-white/8 rounded overflow-hidden" style={{ maxWidth: "100%" }}>
-            <canvas ref={displayCanvasRef} style={{ display: "block", width: "100%", height: "auto", background: "#000" }} />
+          <div
+            className="relative border border-white/8 rounded overflow-hidden bg-black"
+            style={{
+              // responsive max width/height adjustments for md/lg
+              maxWidth: "100%",
+              minHeight: "260px",
+            }}
+          >
+            <canvas
+              ref={displayCanvasRef}
+              style={{ display: "block", width: "100%", height: "auto", background: "#000" }}
+            />
             <canvas ref={baseCanvasRef} style={{ display: "none" }} />
             <canvas
               ref={maskCanvasRef}
@@ -435,12 +450,12 @@ export default function BgRemove() {
           </div>
         </div>
 
-        {/* Right: result + download */}
-        <aside className="w-96 shrink-0">
+        {/* Right: result + download (fixed width on md/lg) */}
+        <aside className="order-1 md:order-2 w-full md:w-96 lg:w-[26rem] shrink-0">
           <div className="mb-4">
             <div className="text-xs text-gray-300 mb-2">Result</div>
 
-            <div className="bg-[#0a0a0a] border border-white/6 rounded p-2 h-64 flex items-center justify-center overflow-hidden">
+            <div className="bg-[#0a0a0a] border border-white/6 rounded p-2 h-56 md:h-64 flex items-center justify-center overflow-hidden">
               {resultUrl ? (
                 <img src={resultUrl} alt="result" className="max-w-full max-h-full object-contain rounded" />
               ) : (
