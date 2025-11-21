@@ -13,6 +13,8 @@ const navItems = [
   { href: "/services", label: "Services" },
   { href: "/contact", label: "Contact" },
   { href: "/blog", label: "Blog" },
+  { href: "/bgremove", label: "Bgremove" },
+
 ];
 
 export default function Header() {
