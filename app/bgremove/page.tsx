@@ -4,6 +4,20 @@ import { useEffect, useRef, useState } from "react";
 const SAMPLE_IMAGE_PATH = "/mnt/data/5494a3ad-9c77-4665-af34-480945b3fcd4.png";
 const HERO_IMG = "/mnt/data/5494a3ad-9c77-4665-af34-480945b3fcd4.png";
 
+// API resolution with fallbacks:
+// 1. NEXT_PUBLIC_API_URL (build / env override)
+// 2. window.location.origin (if running in browser and API served on same origin)
+// 3. explicit localhost default (http://localhost:3000)
+const resolveApi = () => {
+  if (typeof window !== "undefined") {
+    // prefer env var if set, otherwise same-origin, otherwise localhost
+    return process.env.NEXT_PUBLIC_API_URL || window.location.origin ;
+  }
+  // server-side (or during build) fallback to env or localhost
+  return process.env.NEXT_PUBLIC_API_URL ;
+};
+const API = "http://52.90.160.137:8000";
+
 export default function BgRemove() {
   const [mode, setMode] = useState<"pencil" | "eraser">("pencil");
   const [brush, setBrush] = useState(48);
@@ -74,7 +88,9 @@ export default function BgRemove() {
     try {
       const form = new FormData();
       form.append("file", file);
-      const resp = await fetch("http://localhost:8000/remove-bg", { method: "POST", body: form });
+      // use template literal so API value is actually interpolated
+      console.log("Sending request to API at:", API);
+      const resp = await fetch(`${API}/remove-bg`, { method: "POST", body: form });
       if (!resp.ok) throw new Error(await resp.text());
       const blob = await resp.blob();
       setResultUrl(URL.createObjectURL(blob));
@@ -260,7 +276,8 @@ export default function BgRemove() {
       const form = new FormData();
       form.append("file", fileRef.current);
       form.append("mask", maskBlob, "mask.png");
-      const resp = await fetch("http://localhost:8000/remove-bg-refine", { method: "POST", body: form });
+      // fixed template literal here too
+      const resp = await fetch(`${API}/remove-bg-refine`, { method: "POST", body: form });
       if (!resp.ok) throw new Error(await resp.text());
       const out = await resp.blob();
       setResultUrl(URL.createObjectURL(out));
