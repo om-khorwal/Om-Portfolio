@@ -90,7 +90,7 @@ export default function BgRemove() {
       const form = new FormData();
       form.append("file", file);
       console.log("Sending request to API at:", API);
-      const resp = await fetch(`${API}/remove-bg`, { method: "POST", body: form });
+      const resp = await fetch("/api/remove-bg", { method: "POST", body: form });
       if (!resp.ok) throw new Error(await resp.text());
       const blob = await resp.blob();
       setResultUrl(URL.createObjectURL(blob));
@@ -276,7 +276,7 @@ export default function BgRemove() {
       const form = new FormData();
       form.append("file", fileRef.current);
       form.append("mask", maskBlob, "mask.png");
-      const resp = await fetch(`${API}/remove-bg-refine`, { method: "POST", body: form });
+      const resp = await fetch("/api/remove-bg-refine", { method: "POST", body: form });
       if (!resp.ok) throw new Error(await resp.text());
       const out = await resp.blob();
       setResultUrl(URL.createObjectURL(out));
