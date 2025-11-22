@@ -1,4 +1,4 @@
-export const runtime = "edge";
+export const runtime = "nodejs";  // <-- important
 
 export async function POST(req: Request) {
   const formData = await req.formData();
@@ -13,8 +13,6 @@ export async function POST(req: Request) {
   const blob = await response.blob();
 
   return new Response(blob, {
-    headers: {
-      "Content-Type": "image/png",
-    },
+    headers: { "Content-Type": "image/png" },
   });
 }
