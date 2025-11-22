@@ -33,6 +33,10 @@ export default function BgRemove() {
   const maskElemRef = useRef<HTMLCanvasElement | null>(null);
   const maskCtxRef = useRef<CanvasRenderingContext2D | null>(null);
 
+  // refs to keep latest values for handlers (avoid re-binding listeners)
+  const brushRef = useRef<number>(brush);
+  const modeRef = useRef<"pencil" | "eraser">(mode);
+
   const baseCanvas = () => baseCanvasRef.current;
   const maskCanvas = () => maskCanvasRef.current;
   const displayCanvas = () => displayCanvasRef.current;
@@ -46,16 +50,13 @@ export default function BgRemove() {
     if (!cont || !b || !m || !d) return;
 
     const rect = cont.getBoundingClientRect();
-    // container is square; pick the minimum to be safe
     const displayPx = Math.max(1, Math.floor(Math.min(rect.width, rect.height)));
 
-    // set CSS width/height so canvases visually fit the square
     [b, m, d].forEach((c) => {
       c.style.width = `${displayPx}px`;
       c.style.height = `${displayPx}px`;
     });
 
-    // schedule redraw
     requestComposite();
   }
 
@@ -69,26 +70,23 @@ export default function BgRemove() {
     const w = img.naturalWidth || 800;
     const h = img.naturalHeight || 800;
 
-    // Make the internal pixel sizes reflect the image's native size (so mask painting uses image pixels)
     b.width = m.width = d.width = w;
     b.height = m.height = d.height = h;
 
-    // draw original full image into base (so user sees it in composite)
     const bctx = b.getContext("2d");
     if (bctx) {
       bctx.clearRect(0, 0, w, h);
       bctx.drawImage(img, 0, 0, w, h);
     }
 
-    // clear mask
     const mctx = m.getContext("2d");
     if (mctx) {
       mctx.clearRect(0, 0, m.width, m.height);
       mctx.lineCap = "round";
       mctx.lineJoin = "round";
+      mctx.lineWidth = brushRef.current;
     }
 
-    // Ensure canvas CSS sizes match container (calls composite)
     updateCanvasCssSizesToContainer();
   }
 
@@ -117,9 +115,7 @@ export default function BgRemove() {
       const bctx = b.getContext("2d");
       if (!bctx) return;
 
-      // draw refined image into base canvas at native base size
       bctx.clearRect(0, 0, b.width, b.height);
-      // preserve aspect: draw remImg scaled to base dims
       bctx.drawImage(remImg, 0, 0, b.width, b.height);
 
       requestComposite();
@@ -138,7 +134,6 @@ export default function BgRemove() {
       img.src = URL.createObjectURL(file);
       await new Promise((res) => (img.onload = res));
       fitCanvases(img);
-      // run auto remove but don't rely on it to size the preview
       await autoRemoveBgAndShow(file);
     } else if (samplePath) {
       const r = await fetch(samplePath);
@@ -154,7 +149,6 @@ export default function BgRemove() {
 
   function getPosFromEvent(e: PointerEvent, canvas: HTMLCanvasElement) {
     const rect = canvas.getBoundingClientRect();
-    // canvas.width is internal pixel width (image native). rect.width is CSS display width.
     return {
       x: (e.clientX - rect.left) * (canvas.width / rect.width),
       y: (e.clientY - rect.top) * (canvas.height / rect.height),
@@ -169,72 +163,92 @@ export default function BgRemove() {
     });
   }
 
-  // Setup pointer drawing on mask (unchanged logic but ensure maskCtxRef is warmed)
+  // Keep refs in sync with state so handlers read latest values without re-binding
+  useEffect(() => {
+    brushRef.current = brush;
+    if (maskCtxRef.current) maskCtxRef.current.lineWidth = brush;
+  }, [brush]);
 
   useEffect(() => {
-  const initialElem = maskCanvasRef.current;
-  if (!initialElem) return;
+    modeRef.current = mode;
+  }, [mode]);
 
-  // store to stable refs for handlers to reference
-  maskElemRef.current = initialElem;
+  // Setup pointer drawing on mask — handlers read brushRef & modeRef
+  useEffect(() => {
+    const initialElem = maskCanvasRef.current;
+    if (!initialElem) return;
 
-  const ctx = initialElem.getContext("2d");
-  if (!ctx) return;
-  maskCtxRef.current = ctx;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
+    maskElemRef.current = initialElem;
 
-  function down(e: PointerEvent) {
-    const m = maskElemRef.current!;
-    const c = maskCtxRef.current!;
-    drawing.current = true;
-    try { m.setPointerCapture(e.pointerId); } catch {}
-    last.current = getPosFromEvent(e, m);
-    c.beginPath();
-    c.fillStyle = mode === "pencil" ? "white" : "black";
-    c.arc(last.current!.x, last.current!.y, brush / 2, 0, Math.PI * 2);
-    c.fill();
-    requestComposite();
-  }
+    const ctx = initialElem.getContext("2d");
+    if (!ctx) return;
+    maskCtxRef.current = ctx;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = brushRef.current;
 
-  function move(e: PointerEvent) {
-    if (!drawing.current) return;
-    const m = maskElemRef.current!;
-    const c = maskCtxRef.current!;
-    const pos = getPosFromEvent(e, m);
-    c.strokeStyle = mode === "pencil" ? "white" : "black";
-    c.lineWidth = brush;
-    c.beginPath();
-    if (last.current) c.moveTo(last.current.x, last.current.y);
-    c.lineTo(pos.x, pos.y);
-    c.stroke();
-    last.current = pos;
-    requestComposite();
-  }
+    function down(e: PointerEvent) {
+      const m = maskElemRef.current!;
+      const c = maskCtxRef.current!;
+      drawing.current = true;
+      try {
+        m.setPointerCapture(e.pointerId);
+      } catch {}
+      last.current = getPosFromEvent(e, m);
 
-  function up(e: PointerEvent) {
-    drawing.current = false;
-    last.current = null;
-    const m = maskElemRef.current;
-    if (m) {
-      try { m.releasePointerCapture(e.pointerId); } catch {}
+      const currentBrush = brushRef.current;
+      const currentMode = modeRef.current;
+
+      c.beginPath();
+      c.fillStyle = currentMode === "pencil" ? "white" : "black";
+      c.arc(last.current!.x, last.current!.y, currentBrush / 2, 0, Math.PI * 2);
+      c.fill();
+      requestComposite();
     }
-    requestComposite();
-  }
 
-  initialElem.addEventListener("pointerdown", down as any);
-  initialElem.addEventListener("pointermove", move as any);
-  window.addEventListener("pointerup", up as any);
+    function move(e: PointerEvent) {
+      if (!drawing.current) return;
+      const m = maskElemRef.current!;
+      const c = maskCtxRef.current!;
+      const pos = getPosFromEvent(e, m);
 
-  return () => {
-    initialElem.removeEventListener("pointerdown", down as any);
-    initialElem.removeEventListener("pointermove", move as any);
-    window.removeEventListener("pointerup", up as any);
-    if (rafId.current) cancelAnimationFrame(rafId.current);
-  };
-  // intentionally not listing mode/brush to avoid reattaching listeners frequently;
-  // if you want handlers to capture latest mode/brush, include them in deps.
-}, [/* you can add mode, brush here if you want listeners re-bound */]);
+      const currentBrush = brushRef.current;
+      const currentMode = modeRef.current;
+
+      c.strokeStyle = currentMode === "pencil" ? "white" : "black";
+      c.lineWidth = currentBrush;
+      c.beginPath();
+      if (last.current) c.moveTo(last.current.x, last.current.y);
+      c.lineTo(pos.x, pos.y);
+      c.stroke();
+      last.current = pos;
+      requestComposite();
+    }
+
+    function up(e: PointerEvent) {
+      drawing.current = false;
+      last.current = null;
+      const m = maskElemRef.current;
+      if (m) {
+        try {
+          m.releasePointerCapture(e.pointerId);
+        } catch {}
+      }
+      requestComposite();
+    }
+
+    initialElem.addEventListener("pointerdown", down as any);
+    initialElem.addEventListener("pointermove", move as any);
+    window.addEventListener("pointerup", up as any);
+
+    return () => {
+      initialElem.removeEventListener("pointerdown", down as any);
+      initialElem.removeEventListener("pointermove", move as any);
+      window.removeEventListener("pointerup", up as any);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
+    // intentionally empty deps: handlers use refs for latest values
+  }, []);
 
   // Composite: draw base onto display, overlay mask visualisation
   function compositeAndPreview() {
@@ -247,15 +261,9 @@ export default function BgRemove() {
     const dctx = d.getContext("2d");
     if (!bctx || !mctx || !dctx) return;
 
-    // Clear display
     dctx.clearRect(0, 0, d.width, d.height);
-
-    // draw base scaled to display's internal pixel dimensions
-    // NOTE: display canvas internal pixel size equals b.width/b.height (we set that in fitCanvases),
-    // and the CSS size is square; drawImage will preserve aspect and be scaled when shown on screen.
     dctx.drawImage(b, 0, 0, d.width, d.height);
 
-    // create tmp to render mask-colors
     const tmp = document.createElement("canvas");
     tmp.width = m.width;
     tmp.height = m.height;
@@ -343,10 +351,8 @@ export default function BgRemove() {
       updateCanvasCssSizesToContainer();
     });
     ro.observe(cont);
-    // initial update
     updateCanvasCssSizesToContainer();
     return () => ro.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -357,7 +363,6 @@ export default function BgRemove() {
 
   return (
     <div className="min-h-screen bg-[#0b0b0b] p-4 md:p-6 lg:p-10 flex flex-col gap-6">
-      {/* header unchanged */}
       <header className="w-full max-w-7xl mx-auto glass rounded-lg shadow-lg px-4 py-5 md:px-6 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <h1 className="animated-gradient text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-2 text-white">
@@ -400,9 +405,7 @@ export default function BgRemove() {
         </div>
       </header>
 
-      {/* Main area */}
       <main className="w-full max-w-7xl mx-auto bg-gradient-to-br from-white/4 to-white/6 rounded-2xl p-4 md:p-6 border border-white/6 shadow-lg flex flex-col md:flex-row gap-6">
-        {/* Left: controls + square canvas area */}
         <div className="flex-1 min-w-0 order-2 md:order-1">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded bg-[#101010] cursor-pointer border border-white/6">
@@ -437,7 +440,6 @@ export default function BgRemove() {
             </div>
           </div>
 
-          {/* SQUARE CONTAINER */}
           <div
             ref={containerRef}
             className="relative border border-white/8 rounded overflow-hidden bg-black w-full max-w-full"
@@ -497,7 +499,6 @@ export default function BgRemove() {
           </div>
         </div>
 
-        {/* Right: result + download */}
         <aside className="order-1 md:order-2 w-full md:w-96 lg:w-[26rem] shrink-0">
           <div className="mb-4">
             <div className="text-xs text-gray-300 mb-2">Result</div>
