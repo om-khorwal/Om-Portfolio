@@ -1,7 +1,13 @@
+// page.tsx
 "use client";
 import { useEffect, useRef, useState } from "react";
 
 const SAMPLE_IMAGE_PATH = "/mnt/data/5494a3ad-9c77-4665-af34-480945b3fcd4.png";
+
+// Adjust these if you prefer different limits
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // 4 MB target max for backend
+const MAX_DIMENSION = 2048; // largest width/height when resizing
+const MIN_JPEG_QUALITY = 0.5; // don't go below this quality in compression loop
 
 // API resolution (unchanged)
 const resolveApi = () => {
@@ -11,6 +17,94 @@ const resolveApi = () => {
   return process.env.NEXT_PUBLIC_API_URL;
 };
 
+// ----------------- Helper: client-side image compressor/resizer -----------------
+async function fileToImage(file: File): Promise<HTMLImageElement> {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => res(img);
+    img.onerror = (e) => rej(e);
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
+  return await new Promise((res) => {
+    canvas.toBlob((b) => res(b as Blob), type, quality);
+  });
+}
+
+/**
+ * Compress or resize an image File until it is under maxBytes.
+ * Returns a new File (same name with "-compressed" suffix) or the original if already small.
+ */
+async function compressImageFile(origFile: File, maxBytes = MAX_UPLOAD_BYTES): Promise<File> {
+  try {
+    if (origFile.size <= maxBytes) return origFile;
+
+    const img = await fileToImage(origFile);
+    // compute target size while keeping aspect ratio
+    let { width, height } = img;
+    let scale = 1;
+    if (Math.max(width, height) > MAX_DIMENSION) {
+      scale = MAX_DIMENSION / Math.max(width, height);
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+    }
+
+    // draw to canvas at reduced size
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return origFile;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    // prefer image/jpeg for smaller size (server should accept JPEG)
+    let quality = 0.92;
+    let blob = await canvasToBlob(canvas, "image/jpeg", quality);
+
+    // reduce quality in a loop until below maxBytes or until MIN_JPEG_QUALITY
+    while (blob.size > maxBytes && quality > MIN_JPEG_QUALITY) {
+      quality = Math.max(MIN_JPEG_QUALITY, quality - 0.12);
+      blob = await canvasToBlob(canvas, "image/jpeg", quality);
+    }
+
+    // final fallback: if still too big, scale down further iteratively
+    let downscaleAttempts = 0;
+    while (blob.size > maxBytes && downscaleAttempts < 4) {
+      downscaleAttempts++;
+      const factor = 0.8; // scale down to 80% each attempt
+      width = Math.round(width * factor);
+      height = Math.round(height * factor);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      blob = await canvasToBlob(canvas, "image/jpeg", quality);
+    }
+
+    if (blob.size <= 0) return origFile;
+
+    const compressedFile = new File([blob], deriveCompressedName(origFile.name), { type: blob.type });
+    return compressedFile;
+  } catch (err) {
+    // If anything fails, return original file (fail-safe)
+    console.warn("compressImageFile failed, returning original file:", err);
+    return origFile;
+  }
+}
+
+function deriveCompressedName(name: string) {
+  const parts = name.split(".");
+  if (parts.length === 1) return `${name}-compressed.jpg`;
+  const ext = parts.pop();
+  return `${parts.join(".")}-compressed.jpg`;
+}
+
+// ----------------- Component -----------------
 export default function BgRemove() {
   const [mode, setMode] = useState<"pencil" | "eraser">("pencil");
   const [brush, setBrush] = useState(48);
@@ -100,12 +194,62 @@ export default function BgRemove() {
     });
   }
 
+  // Attempt to compress file before sending to backend; update fileRef
+  async function ensureFileUnderLimit(file: File) {
+    if (!file) return file;
+    if (file.size <= MAX_UPLOAD_BYTES) return file;
+    const compressed = await compressImageFile(file, MAX_UPLOAD_BYTES);
+    if (compressed.size < file.size) {
+      console.info(`Compressed ${file.name} from ${Math.round(file.size / 1024)}KB to ${Math.round(compressed.size / 1024)}KB`);
+      return compressed;
+    }
+    return file;
+  }
+
   async function autoRemoveBgAndShow(file: File) {
     try {
+      setResultUrl(null);
+      // compress if needed
+      const uploadFile = await ensureFileUnderLimit(file);
+
+      // update fileRef to the compressed version (so refine uses same file)
+      fileRef.current = uploadFile;
+
       const form = new FormData();
-      form.append("file", file);
+      form.append("file", uploadFile);
+
       const resp = await fetch("/api/remove-bg", { method: "POST", body: form });
-      if (!resp.ok) throw new Error(await resp.text());
+      if (!resp.ok) {
+        // try a single automatic compress-and-retry if server returns 413 or similar
+        const status = resp.status;
+        const txt = await resp.text().catch(() => "");
+        if (status === 413 || txt.toLowerCase().includes("entity too large")) {
+          // attempt to compress more aggressively
+          const moreCompressed = await compressImageFile(uploadFile, Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024));
+          if (moreCompressed.size < uploadFile.size) {
+            // try again
+            const retryForm = new FormData();
+            retryForm.append("file", moreCompressed);
+            const retryResp = await fetch("/api/remove-bg", { method: "POST", body: retryForm });
+            if (!retryResp.ok) throw new Error(`Server error after retry: ${retryResp.status} ${await retryResp.text()}`);
+            const blob = await retryResp.blob();
+            setResultUrl(URL.createObjectURL(blob));
+            const remImg = await blobToImage(blob);
+            const b = baseCanvas();
+            if (!b) return;
+            const bctx = b.getContext("2d");
+            if (!bctx) return;
+            bctx.clearRect(0, 0, b.width, b.height);
+            bctx.drawImage(remImg, 0, 0, b.width, b.height);
+            requestComposite();
+            // update fileRef to the final compressed used for server
+            fileRef.current = moreCompressed;
+            return;
+          }
+        }
+        throw new Error(txt || `Request failed with status ${resp.status}`);
+      }
+
       const blob = await resp.blob();
       setResultUrl(URL.createObjectURL(blob));
       const remImg = await blobToImage(blob);
@@ -130,11 +274,13 @@ export default function BgRemove() {
     const img = imgRef.current;
     if (!img) return;
     if (file) {
-      fileRef.current = file;
-      img.src = URL.createObjectURL(file);
+      // if large, compress before setting as source (so canvas fits)
+      const uploadFile = await ensureFileUnderLimit(file);
+      fileRef.current = uploadFile;
+      img.src = URL.createObjectURL(uploadFile);
       await new Promise((res) => (img.onload = res));
       fitCanvases(img);
-      await autoRemoveBgAndShow(file);
+      await autoRemoveBgAndShow(uploadFile);
     } else if (samplePath) {
       const r = await fetch(samplePath);
       const b = await r.blob();
@@ -173,7 +319,7 @@ export default function BgRemove() {
     modeRef.current = mode;
   }, [mode]);
 
-  // Setup pointer drawing on mask — handlers read brushRef & modeRef
+  // Setup pointer drawing on mask - handlers read brushRef & modeRef
   useEffect(() => {
     const initialElem = maskCanvasRef.current;
     if (!initialElem) return;
@@ -319,11 +465,46 @@ export default function BgRemove() {
       if (!m) throw new Error("Mask not ready");
       const maskBlob = await new Promise<Blob | null>((res) => m.toBlob((b) => res(b), "image/png"));
       if (!maskBlob) throw new Error("Mask export failed");
+
+      // ensure original (or compressed) file is still under limit before refine
+      const finalFile = await ensureFileUnderLimit(fileRef.current);
+      fileRef.current = finalFile;
+
       const form = new FormData();
-      form.append("file", fileRef.current);
+      form.append("file", finalFile);
       form.append("mask", maskBlob, "mask.png");
       const resp = await fetch("/api/remove-bg-refine", { method: "POST", body: form });
-      if (!resp.ok) throw new Error(await resp.text());
+      if (!resp.ok) {
+        const status = resp.status;
+        const txt = await resp.text().catch(() => "");
+        if (status === 413 || txt.toLowerCase().includes("entity too large")) {
+          // try one more compression attempt and retry refine
+          const moreCompressed = await compressImageFile(finalFile, Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024));
+          if (moreCompressed.size < finalFile.size) {
+            const retryForm = new FormData();
+            retryForm.append("file", moreCompressed);
+            retryForm.append("mask", maskBlob, "mask.png");
+            const retryResp = await fetch("/api/remove-bg-refine", { method: "POST", body: retryForm });
+            if (!retryResp.ok) throw new Error(`Server error after retry: ${retryResp.status} ${await retryResp.text()}`);
+            const out = await retryResp.blob();
+            setResultUrl(URL.createObjectURL(out));
+            const refined = await blobToImage(out);
+            const b = baseCanvas();
+            if (b) {
+              const bctx = b.getContext("2d");
+              if (bctx) {
+                bctx.clearRect(0, 0, b.width, b.height);
+                bctx.drawImage(refined, 0, 0, b.width, b.height);
+              }
+            }
+            requestComposite();
+            fileRef.current = moreCompressed;
+            return;
+          }
+        }
+        throw new Error(txt || `Request failed with status ${resp.status}`);
+      }
+
       const out = await resp.blob();
       setResultUrl(URL.createObjectURL(out));
       const refined = await blobToImage(out);
@@ -366,7 +547,7 @@ export default function BgRemove() {
       <header className="w-full max-w-7xl mx-auto glass rounded-lg shadow-lg px-4 py-5 md:px-6 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <h1 className="animated-gradient text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-2 text-white">
-            Remove image backgrounds — editable mask
+            Remove image backgrounds - editable mask
           </h1>
           <p className="mt-1 text-xs sm:text-sm md:text-sm text-gray-300 max-w-2xl">
             Upload an image and the server will automatically remove the background. Refine the result with
@@ -380,7 +561,7 @@ export default function BgRemove() {
             </div>
             <div>
               <div className="text-xs text-gray-400">Control</div>
-              <div className="text-white font-medium">Editable mask — pencil & eraser</div>
+              <div className="text-white font-medium">Editable mask - pencil & eraser</div>
             </div>
             <div>
               <div className="text-xs text-gray-400">Quality</div>
