@@ -28,7 +28,11 @@ async function fileToImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
-async function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
+async function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  type: string,
+  quality?: number
+): Promise<Blob> {
   return await new Promise((res) => {
     canvas.toBlob((b) => res(b as Blob), type, quality);
   });
@@ -38,7 +42,10 @@ async function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: n
  * Compress or resize an image File until it is under maxBytes.
  * Returns a new File (same name with "-compressed" suffix) or the original if already small.
  */
-async function compressImageFile(origFile: File, maxBytes = MAX_UPLOAD_BYTES): Promise<File> {
+async function compressImageFile(
+  origFile: File,
+  maxBytes = MAX_UPLOAD_BYTES
+): Promise<File> {
   try {
     if (origFile.size <= maxBytes) return origFile;
 
@@ -88,7 +95,9 @@ async function compressImageFile(origFile: File, maxBytes = MAX_UPLOAD_BYTES): P
 
     if (blob.size <= 0) return origFile;
 
-    const compressedFile = new File([blob], deriveCompressedName(origFile.name), { type: blob.type });
+    const compressedFile = new File([blob], deriveCompressedName(origFile.name), {
+      type: blob.type,
+    });
     return compressedFile;
   } catch (err) {
     // If anything fails, return original file (fail-safe)
@@ -110,6 +119,7 @@ export default function BgRemove() {
   const [brush, setBrush] = useState(48);
   const [loading, setLoading] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [hasImage, setHasImage] = useState(false); // whether user has uploaded/loaded an image
 
   const imgRef = useRef<HTMLImageElement | null>(null); // hidden loader only
   const fileRef = useRef<File | null>(null);
@@ -200,7 +210,11 @@ export default function BgRemove() {
     if (file.size <= MAX_UPLOAD_BYTES) return file;
     const compressed = await compressImageFile(file, MAX_UPLOAD_BYTES);
     if (compressed.size < file.size) {
-      console.info(`Compressed ${file.name} from ${Math.round(file.size / 1024)}KB to ${Math.round(compressed.size / 1024)}KB`);
+      console.info(
+        `Compressed ${file.name} from ${Math.round(file.size / 1024)}KB to ${Math.round(
+          compressed.size / 1024
+        )}KB`
+      );
       return compressed;
     }
     return file;
@@ -208,6 +222,7 @@ export default function BgRemove() {
 
   async function autoRemoveBgAndShow(file: File) {
     try {
+      setLoading(true);
       setResultUrl(null);
       // compress if needed
       const uploadFile = await ensureFileUnderLimit(file);
@@ -225,13 +240,22 @@ export default function BgRemove() {
         const txt = await resp.text().catch(() => "");
         if (status === 413 || txt.toLowerCase().includes("entity too large")) {
           // attempt to compress more aggressively
-          const moreCompressed = await compressImageFile(uploadFile, Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024));
+          const moreCompressed = await compressImageFile(
+            uploadFile,
+            Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024)
+          );
           if (moreCompressed.size < uploadFile.size) {
             // try again
             const retryForm = new FormData();
             retryForm.append("file", moreCompressed);
-            const retryResp = await fetch("/api/remove-bg", { method: "POST", body: retryForm });
-            if (!retryResp.ok) throw new Error(`Server error after retry: ${retryResp.status} ${await retryResp.text()}`);
+            const retryResp = await fetch("/api/remove-bg", {
+              method: "POST",
+              body: retryForm,
+            });
+            if (!retryResp.ok)
+              throw new Error(
+                `Server error after retry: ${retryResp.status} ${await retryResp.text()}`
+              );
             const blob = await retryResp.blob();
             setResultUrl(URL.createObjectURL(blob));
             const remImg = await blobToImage(blob);
@@ -266,6 +290,8 @@ export default function BgRemove() {
     } catch (err) {
       console.error("autoRemoveBg failed", err);
       alert("Auto background removal failed: " + (err as any).message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -280,6 +306,7 @@ export default function BgRemove() {
       img.src = URL.createObjectURL(uploadFile);
       await new Promise((res) => (img.onload = res));
       fitCanvases(img);
+      setHasImage(true);
       await autoRemoveBgAndShow(uploadFile);
     } else if (samplePath) {
       const r = await fetch(samplePath);
@@ -289,6 +316,7 @@ export default function BgRemove() {
       img.src = URL.createObjectURL(b);
       await new Promise((res) => (img.onload = res));
       fitCanvases(img);
+      setHasImage(true);
       await autoRemoveBgAndShow(f);
     }
   }
@@ -463,7 +491,9 @@ export default function BgRemove() {
     try {
       const m = maskElemRef.current ?? maskCanvasRef.current;
       if (!m) throw new Error("Mask not ready");
-      const maskBlob = await new Promise<Blob | null>((res) => m.toBlob((b) => res(b), "image/png"));
+      const maskBlob = await new Promise<Blob | null>((res) =>
+        m.toBlob((b) => res(b), "image/png")
+      );
       if (!maskBlob) throw new Error("Mask export failed");
 
       // ensure original (or compressed) file is still under limit before refine
@@ -473,19 +503,31 @@ export default function BgRemove() {
       const form = new FormData();
       form.append("file", finalFile);
       form.append("mask", maskBlob, "mask.png");
-      const resp = await fetch("/api/remove-bg-refine", { method: "POST", body: form });
+      const resp = await fetch("/api/remove-bg-refine", {
+        method: "POST",
+        body: form,
+      });
       if (!resp.ok) {
         const status = resp.status;
         const txt = await resp.text().catch(() => "");
         if (status === 413 || txt.toLowerCase().includes("entity too large")) {
           // try one more compression attempt and retry refine
-          const moreCompressed = await compressImageFile(finalFile, Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024));
+          const moreCompressed = await compressImageFile(
+            finalFile,
+            Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024)
+          );
           if (moreCompressed.size < finalFile.size) {
             const retryForm = new FormData();
             retryForm.append("file", moreCompressed);
             retryForm.append("mask", maskBlob, "mask.png");
-            const retryResp = await fetch("/api/remove-bg-refine", { method: "POST", body: retryForm });
-            if (!retryResp.ok) throw new Error(`Server error after retry: ${retryResp.status} ${await retryResp.text()}`);
+            const retryResp = await fetch("/api/remove-bg-refine", {
+              method: "POST",
+              body: retryForm,
+            });
+            if (!retryResp.ok)
+              throw new Error(
+                `Server error after retry: ${retryResp.status} ${await retryResp.text()}`
+              );
             const out = await retryResp.blob();
             setResultUrl(URL.createObjectURL(out));
             const refined = await blobToImage(out);
@@ -542,42 +584,60 @@ export default function BgRemove() {
     };
   }, []);
 
+  const currentModeLabel = mode === "pencil" ? "Keep" : "Remove";
+
   return (
-    <div className="min-h-screen bg-[#0b0b0b] p-4 md:p-6 lg:p-10 flex flex-col gap-6">
-      <header className="w-full max-w-7xl mx-auto glass rounded-lg shadow-lg px-4 py-5 md:px-6 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#050509] to-[#050f15] p-4 md:p-6 lg:p-10 flex flex-col gap-6 text-white">
+      <header className="w-full max-w-7xl mx-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl px-4 py-5 md:px-6 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_0_40px_rgba(0,0,0,0.65)]">
         <div className="flex-1 min-w-0">
-          <h1 className="animated-gradient text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-2 text-white">
-            Remove image backgrounds - editable mask
+          <h1 className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-2 bg-gradient-to-r from-emerald-300 via-cyan-300 to-indigo-300 bg-clip-text text-transparent">
+            Remove image backgrounds – editable mask
           </h1>
-          <p className="mt-1 text-xs sm:text-sm md:text-sm text-gray-300 max-w-2xl">
-            Upload an image and the server will automatically remove the background. Refine the result with
-            the pencil (keep) and eraser (remove) tools, then click <span className="font-semibold">Refine</span> to
-            produce a production-ready transparent PNG.
+          <p className="mt-1 text-xs sm:text-sm md:text-sm text-gray-200/90 max-w-2xl">
+            Upload an image and let the server remove the background automatically.
+            Use the pencil to mark what to keep and the eraser to remove, then hit{" "}
+            <span className="font-semibold">Refine</span> for a clean transparent PNG.
           </p>
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-            <div>
-              <div className="text-xs text-gray-400">Speed</div>
-              <div className="text-white font-medium">Automatic removal in seconds</div>
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
+            <div className="rounded-lg border border-white/10 bg-black/40 px-3 py-2">
+              <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                Speed
+              </div>
+              <div className="text-white font-medium">
+                Automatic removal in seconds
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-gray-400">Control</div>
-              <div className="text-white font-medium">Editable mask - pencil & eraser</div>
+            <div className="rounded-lg border border-white/10 bg-black/40 px-3 py-2">
+              <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                Control
+              </div>
+              <div className="text-white font-medium">
+                Editable mask – pencil &amp; eraser
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-gray-400">Quality</div>
-              <div className="text-white font-medium">Server-side refine for original-pixel output</div>
+            <div className="rounded-lg border border-white/10 bg-black/40 px-3 py-2">
+              <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                Quality
+              </div>
+              <div className="text-white font-medium">
+                Server-side refine at full resolution
+              </div>
             </div>
           </div>
-          <p className="mt-3 text-xs text-gray-400">Tip: Use a smaller brush for hair/fur and fine edges.</p>
+          <p className="mt-3 text-[11px] text-gray-400">
+            Tip: Use a smaller brush for hair, fur and detailed edges.
+          </p>
         </div>
 
         <div className="flex-shrink-0 flex flex-row md:flex-col items-stretch gap-3">
           <button
             onClick={() => {
-              const inp = document.querySelector('input[type="file"]') as HTMLInputElement | null;
+              const inp = document.querySelector(
+                'input[type="file"]'
+              ) as HTMLInputElement | null;
               if (inp) inp.click();
             }}
-            className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 text-white font-medium shadow"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 text-white font-medium shadow-lg shadow-emerald-500/25"
             title="Upload image"
             aria-label="Upload image"
           >
@@ -586,125 +646,225 @@ export default function BgRemove() {
         </div>
       </header>
 
-      <main className="w-full max-w-7xl mx-auto bg-gradient-to-br from-white/4 to-white/6 rounded-2xl p-4 md:p-6 border border-white/6 shadow-lg flex flex-col md:flex-row gap-6">
-        <div className="flex-1 min-w-0 order-2 md:order-1">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
-            <label className="inline-flex items-center gap-2 px-3 py-2 rounded bg-[#101010] cursor-pointer border border-white/6">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  await loadImageFromFile(f);
-                }}
-              />
-              <span className="text-sm text-gray-200">Upload</span>
-            </label>
+      {/* MAIN: side-by-side editor + result */}
+      <main className="w-full max-w-7xl mx-auto bg-black/40 rounded-2xl p-4 md:p-6 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* LEFT: Processing canvas and controls */}
+          <section className="flex-1 flex flex-col min-w-0">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
+              <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#111111] cursor-pointer border border-white/10 hover:border-emerald-400/60 transition">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    await loadImageFromFile(f);
+                  }}
+                />
+                <span className="text-sm text-gray-100">Upload</span>
+              </label>
 
-            <button onClick={() => clearMask()} className="inline-flex items-center gap-2 px-3 py-2 rounded bg-[#141414] text-gray-200 border border-white/6 ml-0 sm:ml-2">
-              Clear
-            </button>
+              <button
+                onClick={() => clearMask()}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#151515] text-gray-100 border border-white/10 hover:border-white/30 transition ml-0 sm:ml-2"
+              >
+                Clear mask
+              </button>
 
-            <div className="ml-auto flex items-center gap-4 text-sm text-gray-300">
-              <label className="hidden sm:block">Brush</label>
-              <input
-                type="range"
-                min={4}
-                max={200}
-                value={brush}
-                onChange={(e) => setBrush(Number(e.target.value))}
-                className="w-36 sm:w-48"
-              />
-              <div className="text-xs text-gray-300 w-14 text-right">{brush}px</div>
+              <div className="ml-auto flex items-center gap-3 text-sm text-gray-200 w-full sm:w-auto">
+                <span className="hidden sm:inline text-xs text-gray-400">
+                  Brush size
+                </span>
+                <input
+                  type="range"
+                  min={4}
+                  max={200}
+                  value={brush}
+                  onChange={(e) => setBrush(Number(e.target.value))}
+                  className="w-full sm:w-48 accent-emerald-500"
+                />
+                <div className="text-[11px] text-gray-300 w-16 text-right">
+                  {brush}px
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div
-            ref={containerRef}
-            className="relative border border-white/8 rounded overflow-hidden bg-black w-full max-w-full"
-            style={{
-              aspectRatio: "1 / 1",
-              minHeight: "260px",
-              maxHeight: "80vh",
-            }}
-          >
-            {/* Hidden loader image only (no duplicate visible img) */}
-            <img ref={imgRef} alt="loader" style={{ display: "none" }} />
-
-            {/* display canvas (visible) */}
-            <canvas
-              ref={displayCanvasRef}
-              className="absolute inset-0 w-full h-full"
-              style={{ background: "transparent", touchAction: "none" }}
-            />
-
-            {/* base canvas (offscreen for image data, keep hidden visually) */}
-            <canvas ref={baseCanvasRef} style={{ display: "none" }} />
-
-            {/* mask canvas (visible for drawing) */}
-            <canvas
-              ref={maskCanvasRef}
-              className="absolute inset-0 w-full h-full"
-              style={{ cursor: "crosshair", background: "transparent" }}
-            />
-          </div>
-
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              onClick={() => setMode("pencil")}
-              aria-label="Keep (pencil)"
-              className={`p-2 rounded ${mode === "pencil" ? "bg-green-600 text-white" : "bg-white/5 text-gray-200"}`}
-              title="Keep (pencil)"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M3 21l3-1 11-11 2-2a2.8 2.8 0 0 0 0-4l-2-2a2.8 2.8 0 0 0-4 0l-2 2L3 16v5z" />
-              </svg>
-            </button>
-
-            <button
-              onClick={() => setMode("eraser")}
-              aria-label="Remove (eraser)"
-              className={`p-2 rounded ${mode === "eraser" ? "bg-red-600 text-white" : "bg-white/5 text-gray-200"}`}
-              title="Remove (eraser)"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M21 15L9 3 3 9l12 12 6-6z" />
-              </svg>
-            </button>
-
-            <button onClick={() => sendForRefine()} disabled={loading || !fileRef.current} className={`ml-auto px-4 py-2 rounded ${loading ? "bg-gray-500 text-white" : "bg-emerald-500 text-white"}`}>
-              {loading ? "Processing..." : "Refine"}
-            </button>
-          </div>
-        </div>
-
-        <aside className="order-1 md:order-2 w-full md:w-96 lg:w-[26rem] shrink-0">
-          <div className="mb-4">
-            <div className="text-xs text-gray-300 mb-2">Result</div>
-
-            <div className="bg-[#0a0a0a] border border-white/6 rounded p-2 h-56 md:h-64 flex items-center justify-center overflow-hidden">
-              {resultUrl ? (
-                <img src={resultUrl} alt="result" className="max-w-full max-h-full object-contain rounded" />
-              ) : (
-                <div className="text-gray-500 text-sm">No result yet</div>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 uppercase tracking-wide">
+                  Editor
+                </span>
+                {hasImage && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-300">
+                    Mode: <span className="font-semibold">{currentModeLabel}</span>
+                  </span>
+                )}
+              </div>
+              {loading && hasImage && (
+                <span className="text-[10px] flex items-center gap-1 text-emerald-300">
+                  <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Processing…
+                </span>
               )}
             </div>
-          </div>
 
-          <div className="flex justify-center">
-            <a
-              href={resultUrl ?? "#"}
-              download={resultUrl ? "result.png" : undefined}
-              className={`px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 ${!resultUrl ? "opacity-50 pointer-events-none" : ""}`}
+            <div
+              ref={containerRef}
+              className="relative border border-white/12 rounded-xl overflow-hidden bg-[#030303] w-full max-w-full"
+              style={{
+                aspectRatio: "1 / 1",
+                minHeight: "260px",
+                maxHeight: "80vh",
+              }}
             >
-              Download Result
-            </a>
-          </div>
+              {/* Hidden loader image only (no duplicate visible img) */}
+              <img ref={imgRef} alt="loader" style={{ display: "none" }} />
 
-          <div className="mt-4 text-xs text-gray-400">Tip: Upload → auto-removed → edit → Refine to apply edits.</div>
-        </aside>
+              {/* display canvas (visible) */}
+              <canvas
+                ref={displayCanvasRef}
+                className="absolute inset-0 w-full h-full"
+                style={{ background: "transparent", touchAction: "none" }}
+              />
+
+              {/* base canvas (offscreen for image data, keep hidden visually) */}
+              <canvas ref={baseCanvasRef} style={{ display: "none" }} />
+
+              {/* mask canvas (visible for drawing) */}
+              <canvas
+                ref={maskCanvasRef}
+                className="absolute inset-0 w-full h-full"
+                style={{ cursor: "crosshair", background: "transparent" }}
+              />
+
+              {/* Processing overlay ONLY when image is present & loading */}
+              {loading && hasImage && (
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 pointer-events-none">
+                  <div className="h-10 w-10 border-2 border-emerald-400/70 border-t-transparent rounded-full animate-spin" />
+                  <div className="text-xs text-gray-200">
+                    Applying background removal…
+                  </div>
+                </div>
+              )}
+
+              {/* Placeholder when no image yet */}
+              {!hasImage && !loading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 text-xs pointer-events-none">
+                  <div className="h-16 w-16 rounded-xl border border-dashed border-gray-600/70 flex items-center justify-center">
+                    <span className="text-[11px] text-gray-400">No image</span>
+                  </div>
+                  <div>Upload an image to start editing</div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-3 flex items-center gap-3">
+              <button
+                onClick={() => setMode("pencil")}
+                aria-label="Keep (pencil)"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border ${
+                  mode === "pencil"
+                    ? "bg-emerald-600 text-white border-emerald-400"
+                    : "bg-white/5 text-gray-200 border-white/10 hover:border-emerald-300/60"
+                }`}
+                title="Keep (pencil)"
+              >
+                <span className="inline-flex h-4 w-4 rounded-full bg-emerald-400/80" />
+                Keep
+              </button>
+
+              <button
+                onClick={() => setMode("eraser")}
+                aria-label="Remove (eraser)"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border ${
+                  mode === "eraser"
+                    ? "bg-red-600 text-white border-red-400"
+                    : "bg-white/5 text-gray-200 border-white/10 hover:border-red-300/60"
+                }`}
+                title="Remove (eraser)"
+              >
+                <span className="inline-flex h-4 w-4 rounded-full bg-red-400/80" />
+                Remove
+              </button>
+
+              <button
+                onClick={() => sendForRefine()}
+                disabled={loading || !fileRef.current}
+                className={`ml-auto px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  loading || !fileRef.current
+                    ? "bg-gray-600 text-white opacity-70 cursor-not-allowed"
+                    : "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:from-emerald-500 hover:to-cyan-400 shadow-lg shadow-emerald-500/25"
+                }`}
+              >
+                {loading ? "Processing..." : "Refine"}
+              </button>
+            </div>
+          </section>
+
+          {/* RIGHT: Result panel, same visual size as editor */}
+          <section className="flex-1 flex flex-col min-w-0">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-400 uppercase tracking-wide">
+                  Result
+                </span>
+                <span className="text-[11px] text-gray-500">
+                  Transparent PNG preview
+                </span>
+              </div>
+              {resultUrl && !loading && (
+                <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-600/20 text-emerald-300 border border-emerald-500/40">
+                  Ready
+                </span>
+              )}
+            </div>
+
+            <div
+              className="relative bg-[#050505] border border-white/10 rounded-xl overflow-hidden flex items-center justify-center w-full"
+              style={{
+                aspectRatio: "1 / 1",
+                minHeight: "260px",
+                maxHeight: "80vh",
+              }}
+            >
+              {resultUrl ? (
+                <img
+                  src={resultUrl}
+                  alt="result"
+                  className="max-w-full max-h-full object-contain rounded"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-2 text-gray-500 text-xs px-4 text-center">
+                  <div className="h-16 w-16 bg-[linear-gradient(45deg,#1f2933_25%,transparent_25%,transparent_50%,#1f2933_50%,#1f2933_75%,transparent_75%,transparent)] bg-[length:8px_8px] rounded-xl border border-white/5" />
+                  <div>No result yet</div>
+                  <div className="text-[11px] text-gray-500">
+                    Upload an image and click <span className="font-semibold">Refine</span> to see
+                    the final cut-out here.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 flex flex-col items-center gap-2">
+              <a
+                href={resultUrl ?? "#"}
+                download={resultUrl ? "result.png" : undefined}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  resultUrl
+                    ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/25"
+                    : "bg-gray-700 text-gray-300 opacity-60 cursor-not-allowed"
+                }`}
+              >
+                Download result
+              </a>
+              <div className="text-[11px] text-gray-400 text-center">
+                Flow: Upload → auto remove → edit with mask → Refine → Download.
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );
