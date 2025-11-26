@@ -2,14 +2,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
+// config
 const SAMPLE_IMAGE_PATH = "/mnt/data/5494a3ad-9c77-4665-af34-480945b3fcd4.png";
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+const MAX_DIMENSION = 2048;
+const MIN_JPEG_QUALITY = 0.5;
 
-// Adjust these if you prefer different limits
-const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // 4 MB target max for backend
-const MAX_DIMENSION = 2048; // largest width/height when resizing
-const MIN_JPEG_QUALITY = 0.5; // don't go below this quality in compression loop
-
-// API resolution (unchanged)
+// api resolver
 const resolveApi = () => {
   if (typeof window !== "undefined") {
     return process.env.NEXT_PUBLIC_API_URL || window.location.origin;
@@ -17,7 +16,7 @@ const resolveApi = () => {
   return process.env.NEXT_PUBLIC_API_URL;
 };
 
-// ----------------- Helper: client-side image compressor/resizer -----------------
+// helper: image & compression
 async function fileToImage(file: File): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
     const img = new Image();
@@ -38,10 +37,6 @@ async function canvasToBlob(
   });
 }
 
-/**
- * Compress or resize an image File until it is under maxBytes.
- * Returns a new File (same name with "-compressed" suffix) or the original if already small.
- */
 async function compressImageFile(
   origFile: File,
   maxBytes = MAX_UPLOAD_BYTES
@@ -50,7 +45,6 @@ async function compressImageFile(
     if (origFile.size <= maxBytes) return origFile;
 
     const img = await fileToImage(origFile);
-    // compute target size while keeping aspect ratio
     let { width, height } = img;
     let scale = 1;
     if (Math.max(width, height) > MAX_DIMENSION) {
@@ -59,7 +53,6 @@ async function compressImageFile(
       height = Math.round(height * scale);
     }
 
-    // draw to canvas at reduced size
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
@@ -69,21 +62,18 @@ async function compressImageFile(
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
 
-    // prefer image/jpeg for smaller size (server should accept JPEG)
     let quality = 0.92;
     let blob = await canvasToBlob(canvas, "image/jpeg", quality);
 
-    // reduce quality in a loop until below maxBytes or until MIN_JPEG_QUALITY
     while (blob.size > maxBytes && quality > MIN_JPEG_QUALITY) {
       quality = Math.max(MIN_JPEG_QUALITY, quality - 0.12);
       blob = await canvasToBlob(canvas, "image/jpeg", quality);
     }
 
-    // final fallback: if still too big, scale down further iteratively
     let downscaleAttempts = 0;
     while (blob.size > maxBytes && downscaleAttempts < 4) {
       downscaleAttempts++;
-      const factor = 0.8; // scale down to 80% each attempt
+      const factor = 0.8;
       width = Math.round(width * factor);
       height = Math.round(height * factor);
       canvas.width = width;
@@ -100,7 +90,6 @@ async function compressImageFile(
     });
     return compressedFile;
   } catch (err) {
-    // If anything fails, return original file (fail-safe)
     console.warn("compressImageFile failed, returning original file:", err);
     return origFile;
   }
@@ -113,22 +102,22 @@ function deriveCompressedName(name: string) {
   return `${parts.join(".")}-compressed.jpg`;
 }
 
-// ----------------- Component -----------------
+// component
 export default function BgRemove() {
   const [mode, setMode] = useState<"pencil" | "eraser">("pencil");
   const [brush, setBrush] = useState(48);
   const [loading, setLoading] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
-  const [hasImage, setHasImage] = useState(false); // whether user has uploaded/loaded an image
+  const [hasImage, setHasImage] = useState(false);
 
-  const imgRef = useRef<HTMLImageElement | null>(null); // hidden loader only
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const fileRef = useRef<File | null>(null);
 
   const baseCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const displayCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const containerRef = useRef<HTMLDivElement | null>(null); // square container
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const drawing = useRef(false);
   const last = useRef<{ x: number; y: number } | null>(null);
@@ -137,7 +126,6 @@ export default function BgRemove() {
   const maskElemRef = useRef<HTMLCanvasElement | null>(null);
   const maskCtxRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  // refs to keep latest values for handlers (avoid re-binding listeners)
   const brushRef = useRef<number>(brush);
   const modeRef = useRef<"pencil" | "eraser">(mode);
 
@@ -145,7 +133,7 @@ export default function BgRemove() {
   const maskCanvas = () => maskCanvasRef.current;
   const displayCanvas = () => displayCanvasRef.current;
 
-  // --- Helper: set CSS size of canvases to fill the square container ---
+  // sizing and fit
   function updateCanvasCssSizesToContainer() {
     const cont = containerRef.current;
     const b = baseCanvas();
@@ -154,17 +142,27 @@ export default function BgRemove() {
     if (!cont || !b || !m || !d) return;
 
     const rect = cont.getBoundingClientRect();
-    const displayPx = Math.max(1, Math.floor(Math.min(rect.width, rect.height)));
+    const maxSize = Math.min(rect.width, rect.height);
 
-    [b, m, d].forEach((c) => {
-      c.style.width = `${displayPx}px`;
-      c.style.height = `${displayPx}px`;
+    const iw = b.width;
+    const ih = b.height;
+    if (!iw || !ih) return;
+
+    const scale = Math.min(maxSize / iw, maxSize / ih);
+    const displayW = iw * scale;
+    const displayH = ih * scale;
+    const left = (rect.width - displayW) / 2;
+    const top = (rect.height - displayH) / 2;
+
+    [displayCanvas(), maskCanvas()].forEach((c) => {
+      if (!c) return;
+      c.style.width = `${displayW}px`;
+      c.style.height = `${displayH}px`;
+      c.style.left = `${left}px`;
+      c.style.top = `${top}px`;
     });
-
-    requestComposite();
   }
 
-  // Fit internal canvas sizes to the image natural size (keeps mask coordinates correct)
   function fitCanvases(img: HTMLImageElement) {
     const b = baseCanvas();
     const m = maskCanvas();
@@ -174,8 +172,12 @@ export default function BgRemove() {
     const w = img.naturalWidth || 800;
     const h = img.naturalHeight || 800;
 
-    b.width = m.width = d.width = w;
-    b.height = m.height = d.height = h;
+    b.width = w;
+    b.height = h;
+    m.width = w;
+    m.height = h;
+    d.width = w;
+    d.height = h;
 
     const bctx = b.getContext("2d");
     if (bctx) {
@@ -192,6 +194,7 @@ export default function BgRemove() {
     }
 
     updateCanvasCssSizesToContainer();
+    requestComposite();
   }
 
   function blobToImage(blob: Blob) {
@@ -204,7 +207,7 @@ export default function BgRemove() {
     });
   }
 
-  // Attempt to compress file before sending to backend; update fileRef
+  // file size guard
   async function ensureFileUnderLimit(file: File) {
     if (!file) return file;
     if (file.size <= MAX_UPLOAD_BYTES) return file;
@@ -220,14 +223,13 @@ export default function BgRemove() {
     return file;
   }
 
+  // server: initial auto remove
   async function autoRemoveBgAndShow(file: File) {
     try {
       setLoading(true);
       setResultUrl(null);
-      // compress if needed
-      const uploadFile = await ensureFileUnderLimit(file);
 
-      // update fileRef to the compressed version (so refine uses same file)
+      const uploadFile = await ensureFileUnderLimit(file);
       fileRef.current = uploadFile;
 
       const form = new FormData();
@@ -235,17 +237,14 @@ export default function BgRemove() {
 
       const resp = await fetch("/api/remove-bg", { method: "POST", body: form });
       if (!resp.ok) {
-        // try a single automatic compress-and-retry if server returns 413 or similar
         const status = resp.status;
         const txt = await resp.text().catch(() => "");
         if (status === 413 || txt.toLowerCase().includes("entity too large")) {
-          // attempt to compress more aggressively
           const moreCompressed = await compressImageFile(
             uploadFile,
             Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024)
           );
           if (moreCompressed.size < uploadFile.size) {
-            // try again
             const retryForm = new FormData();
             retryForm.append("file", moreCompressed);
             const retryResp = await fetch("/api/remove-bg", {
@@ -258,16 +257,8 @@ export default function BgRemove() {
               );
             const blob = await retryResp.blob();
             setResultUrl(URL.createObjectURL(blob));
-            const remImg = await blobToImage(blob);
-            const b = baseCanvas();
-            if (!b) return;
-            const bctx = b.getContext("2d");
-            if (!bctx) return;
-            bctx.clearRect(0, 0, b.width, b.height);
-            bctx.drawImage(remImg, 0, 0, b.width, b.height);
-            requestComposite();
-            // update fileRef to the final compressed used for server
             fileRef.current = moreCompressed;
+            requestComposite();
             return;
           }
         }
@@ -276,16 +267,6 @@ export default function BgRemove() {
 
       const blob = await resp.blob();
       setResultUrl(URL.createObjectURL(blob));
-      const remImg = await blobToImage(blob);
-
-      const b = baseCanvas();
-      if (!b) return;
-      const bctx = b.getContext("2d");
-      if (!bctx) return;
-
-      bctx.clearRect(0, 0, b.width, b.height);
-      bctx.drawImage(remImg, 0, 0, b.width, b.height);
-
       requestComposite();
     } catch (err) {
       console.error("autoRemoveBg failed", err);
@@ -295,12 +276,11 @@ export default function BgRemove() {
     }
   }
 
-  // Load image (from file or sample); imgRef is hidden loader only
+  // load image into editor
   async function loadImageFromFile(file?: File, samplePath?: string) {
     const img = imgRef.current;
     if (!img) return;
     if (file) {
-      // if large, compress before setting as source (so canvas fits)
       const uploadFile = await ensureFileUnderLimit(file);
       fileRef.current = uploadFile;
       img.src = URL.createObjectURL(uploadFile);
@@ -321,6 +301,7 @@ export default function BgRemove() {
     }
   }
 
+  // drawing helpers
   function getPosFromEvent(e: PointerEvent, canvas: HTMLCanvasElement) {
     const rect = canvas.getBoundingClientRect();
     return {
@@ -337,7 +318,7 @@ export default function BgRemove() {
     });
   }
 
-  // Keep refs in sync with state so handlers read latest values without re-binding
+  // sync refs
   useEffect(() => {
     brushRef.current = brush;
     if (maskCtxRef.current) maskCtxRef.current.lineWidth = brush;
@@ -347,7 +328,7 @@ export default function BgRemove() {
     modeRef.current = mode;
   }, [mode]);
 
-  // Setup pointer drawing on mask - handlers read brushRef & modeRef
+  // pointer events on mask
   useEffect(() => {
     const initialElem = maskCanvasRef.current;
     if (!initialElem) return;
@@ -421,10 +402,9 @@ export default function BgRemove() {
       window.removeEventListener("pointerup", up as any);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-    // intentionally empty deps: handlers use refs for latest values
   }, []);
 
-  // Composite: draw base onto display, overlay mask visualisation
+  // composite editor preview
   function compositeAndPreview() {
     const b = baseCanvas();
     const m = maskCanvas();
@@ -473,6 +453,7 @@ export default function BgRemove() {
     dctx.drawImage(tmp, 0, 0, d.width, d.height);
   }
 
+  // mask tools
   function clearMask() {
     const m = maskElemRef.current ?? maskCanvasRef.current;
     const c = maskCtxRef.current;
@@ -481,6 +462,7 @@ export default function BgRemove() {
     requestComposite();
   }
 
+  // server: refine with mask
   async function sendForRefine() {
     if (!fileRef.current) {
       alert("Upload or use the sample image first.");
@@ -496,7 +478,6 @@ export default function BgRemove() {
       );
       if (!maskBlob) throw new Error("Mask export failed");
 
-      // ensure original (or compressed) file is still under limit before refine
       const finalFile = await ensureFileUnderLimit(fileRef.current);
       fileRef.current = finalFile;
 
@@ -511,7 +492,6 @@ export default function BgRemove() {
         const status = resp.status;
         const txt = await resp.text().catch(() => "");
         if (status === 413 || txt.toLowerCase().includes("entity too large")) {
-          // try one more compression attempt and retry refine
           const moreCompressed = await compressImageFile(
             finalFile,
             Math.min(MAX_UPLOAD_BYTES, 2 * 1024 * 1024)
@@ -530,17 +510,8 @@ export default function BgRemove() {
               );
             const out = await retryResp.blob();
             setResultUrl(URL.createObjectURL(out));
-            const refined = await blobToImage(out);
-            const b = baseCanvas();
-            if (b) {
-              const bctx = b.getContext("2d");
-              if (bctx) {
-                bctx.clearRect(0, 0, b.width, b.height);
-                bctx.drawImage(refined, 0, 0, b.width, b.height);
-              }
-            }
-            requestComposite();
             fileRef.current = moreCompressed;
+            requestComposite();
             return;
           }
         }
@@ -549,15 +520,6 @@ export default function BgRemove() {
 
       const out = await resp.blob();
       setResultUrl(URL.createObjectURL(out));
-      const refined = await blobToImage(out);
-      const b = baseCanvas();
-      if (b) {
-        const bctx = b.getContext("2d");
-        if (bctx) {
-          bctx.clearRect(0, 0, b.width, b.height);
-          bctx.drawImage(refined, 0, 0, b.width, b.height);
-        }
-      }
       requestComposite();
     } catch (err: any) {
       alert("Error: " + (err?.message || err));
@@ -566,7 +528,7 @@ export default function BgRemove() {
     }
   }
 
-  // Resize observer: keep the visible square sized responsively
+  // layout resize
   useEffect(() => {
     const cont = containerRef.current;
     if (!cont) return;
@@ -586,6 +548,7 @@ export default function BgRemove() {
 
   const currentModeLabel = mode === "pencil" ? "Keep" : "Remove";
 
+  // ui
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-[#050509] to-[#050f15] p-4 md:p-6 lg:p-10 flex flex-col gap-6 text-white">
       <header className="w-full max-w-7xl mx-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl px-4 py-5 md:px-6 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_0_40px_rgba(0,0,0,0.65)]">
@@ -646,10 +609,8 @@ export default function BgRemove() {
         </div>
       </header>
 
-      {/* MAIN: side-by-side editor + result */}
       <main className="w-full max-w-7xl mx-auto bg-black/40 rounded-2xl p-4 md:p-6 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col gap-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* LEFT: Processing canvas and controls */}
           <section className="flex-1 flex flex-col min-w-0">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
               <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#111111] cursor-pointer border border-white/10 hover:border-emerald-400/60 transition">
@@ -719,27 +680,22 @@ export default function BgRemove() {
                 maxHeight: "80vh",
               }}
             >
-              {/* Hidden loader image only (no duplicate visible img) */}
               <img ref={imgRef} alt="loader" style={{ display: "none" }} />
 
-              {/* display canvas (visible) */}
               <canvas
                 ref={displayCanvasRef}
-                className="absolute inset-0 w-full h-full"
+                className="absolute"
                 style={{ background: "transparent", touchAction: "none" }}
               />
 
-              {/* base canvas (offscreen for image data, keep hidden visually) */}
               <canvas ref={baseCanvasRef} style={{ display: "none" }} />
 
-              {/* mask canvas (visible for drawing) */}
               <canvas
                 ref={maskCanvasRef}
-                className="absolute inset-0 w-full h-full"
+                className="absolute"
                 style={{ cursor: "crosshair", background: "transparent" }}
               />
 
-              {/* Processing overlay ONLY when image is present & loading */}
               {loading && hasImage && (
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 pointer-events-none">
                   <div className="h-10 w-10 border-2 border-emerald-400/70 border-t-transparent rounded-full animate-spin" />
@@ -749,7 +705,6 @@ export default function BgRemove() {
                 </div>
               )}
 
-              {/* Placeholder when no image yet */}
               {!hasImage && !loading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500 text-xs pointer-events-none">
                   <div className="h-16 w-16 rounded-xl border border-dashed border-gray-600/70 flex items-center justify-center">
@@ -803,7 +758,6 @@ export default function BgRemove() {
             </div>
           </section>
 
-          {/* RIGHT: Result panel, same visual size as editor */}
           <section className="flex-1 flex flex-col min-w-0">
             <div className="flex items-center justify-between mb-2">
               <div className="flex flex-col">
