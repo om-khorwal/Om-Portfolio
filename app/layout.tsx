@@ -1,6 +1,6 @@
 import "./globals.css";
 import Cursor from "../app/components/cursor"; // or correct path
-
+import { Analytics } from "@vercel/analytics/next"
 import type { Metadata } from "next";
 import Header from "../app/components/header";
 import Footer from "../app/components/footer";
