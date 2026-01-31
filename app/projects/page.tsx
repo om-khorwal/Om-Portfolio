@@ -31,6 +31,14 @@ const designProjects = [
     link: "https://www.figma.com/design/2SXZDIpUFvGNSk4MXdX7kl/Valutics-Landing-Page?node-id=0-1&p=f",
     badges: ["Design system", "Landing UX"],
   },
+  {
+    title: "Ad2ship Dashboard",
+    tag: "Dashboard design · Figma",
+    img: "https://res.cloudinary.com/duljp6zqa/image/upload/v1769861168/d2ea3a72-2aa2-4fb7-a0d1-106309cef7f9.png",
+    summary: "Dashboard design for a shipping and logistics platform.",
+    link: "https://www.figma.com/design/7bDO9Pb0DtEfZ0wqjGzFHA/Untitled?node-id=2-262&t=nFUxWcNOrv0IFjL8-0",
+    badges: ["Design system", "Landing UX"],
+  },
 ];
 
 // ---- DEV PROJECTS ----
@@ -57,6 +65,14 @@ const devProjects = [
     summary: "Website with clean structure, elegant UI, and strong SEO.",
     href: "https://livinnovate.com/",
     image: "/l.png",
+    badges: ["Clear & Scalable code",],
+  },
+  {
+    title: "Agaate",
+    tag: "Agri-tech · Landing Page",
+    summary: "Professional clean website for products and services related to nursery tech.",
+    href: "https://agaate.theokcompany.in/",
+    image: "/agaate.png",
     badges: ["Clear & Scalable code",],
   },
 ];
