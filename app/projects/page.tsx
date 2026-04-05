@@ -75,6 +75,14 @@ const devProjects = [
     image: "/agaate.png",
     badges: ["Clear & Scalable code",],
   },
+  {
+    title: "Ani-ike",
+    tag: "Anime Info website",
+    summary: "Professional clean website for info related to anime.",
+    href: "https://anime.theokcompany.in/",
+    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1769862038/1a4f6c82-11e7-4f13-a818-5bde3974c8b9.png",
+    badges: ["API integration and responsive design",],
+  },
 ];
 
 type TabKey = "Design" | "Development" | "Videos";

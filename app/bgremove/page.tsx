@@ -126,6 +126,9 @@ export default function BgRemove() {
   const maskElemRef = useRef<HTMLCanvasElement | null>(null);
   const maskCtxRef = useRef<CanvasRenderingContext2D | null>(null);
 
+  const tmpCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const tmpCtxRef = useRef<CanvasRenderingContext2D | null>(null);
+
   const brushRef = useRef<number>(brush);
   const modeRef = useRef<"pencil" | "eraser">(mode);
 
@@ -192,6 +195,14 @@ export default function BgRemove() {
       mctx.lineJoin = "round";
       mctx.lineWidth = brushRef.current;
     }
+
+    // resize the reusable composite scratch canvas
+    if (!tmpCanvasRef.current) {
+      tmpCanvasRef.current = document.createElement("canvas");
+      tmpCtxRef.current = tmpCanvasRef.current.getContext("2d");
+    }
+    tmpCanvasRef.current.width = w;
+    tmpCanvasRef.current.height = h;
 
     updateCanvasCssSizesToContainer();
     requestComposite();
@@ -418,11 +429,14 @@ export default function BgRemove() {
     dctx.clearRect(0, 0, d.width, d.height);
     dctx.drawImage(b, 0, 0, d.width, d.height);
 
-    const tmp = document.createElement("canvas");
-    tmp.width = m.width;
-    tmp.height = m.height;
-    const tctx = tmp.getContext("2d");
-    if (!tctx) return;
+    // reuse cached scratch canvas instead of creating a new one each frame
+    const tmp = tmpCanvasRef.current;
+    const tctx = tmpCtxRef.current;
+    if (!tmp || !tctx) return;
+    if (tmp.width !== m.width || tmp.height !== m.height) {
+      tmp.width = m.width;
+      tmp.height = m.height;
+    }
     tctx.clearRect(0, 0, tmp.width, tmp.height);
     tctx.drawImage(m, 0, 0);
 

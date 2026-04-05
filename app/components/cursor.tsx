@@ -13,10 +13,16 @@ import { useEffect, useState } from "react";
 export default function Cursor() {
   const [enabled, setEnabled] = useState(false);
 
-  // Detect touch devices first
+  // Disable on touch devices and non-desktop screen sizes
   useEffect(() => {
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
-    if (!isTouch) setEnabled(true);
+    const check = () => {
+      const isTouch = window.matchMedia("(pointer: coarse)").matches;
+      const isDesktop = window.innerWidth >= 1024;
+      setEnabled(!isTouch && isDesktop);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   // Always define hooks (do NOT conditionally run hooks)
