@@ -83,6 +83,14 @@ const devProjects = [
     image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1769862038/1a4f6c82-11e7-4f13-a818-5bde3974c8b9.png",
     badges: ["API integration and responsive design",],
   },
+  {
+    title: "NotesFlow",
+    tag: "Freelance · Full-stack Web App",
+    summary: "Professional notes and tasks system — capture ideas, manage work, and share anything instantly with rich formatting and dark mode.",
+    href: "https://notes-flow.theokcompany.in/",
+    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1776624869/07ebdf63-c67c-4fd0-90e7-aa2c88dd2ace.png",
+    badges: ["Rich Notes", "Task Management", "Secure Sharing"],
+  },
 ];
 
 type TabKey = "Design" | "Development" | "Videos";
