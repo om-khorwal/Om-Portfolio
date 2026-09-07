@@ -7,7 +7,7 @@ const links = {
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
-    { label: "Projects", href: "/projects" },
+    { label: "Work", href: "/projects" },
     { label: "Blog", href: "/blog" },
   ],
   cool: [

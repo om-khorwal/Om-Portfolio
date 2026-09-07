@@ -8,9 +8,8 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const mainNavItems = [
   { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
+  { href: "/projects", label: "Work" },
   { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -25,7 +24,7 @@ export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     setMobileOpen(false);

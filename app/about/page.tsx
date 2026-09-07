@@ -125,8 +125,8 @@ export default function AboutPage() {
           <Link href="/contact" className="glass rounded-xl px-4 py-2 text-sm hover:opacity-90 transition">
             Contact Me
           </Link>
-          <Link href="/services" className="rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5 transition">
-            View Services
+          <Link href="/projects" className="rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5 transition">
+            View Work
           </Link>
         </div>
       </section>

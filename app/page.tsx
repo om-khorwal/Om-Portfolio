@@ -11,27 +11,27 @@ const fadeUp = {
 
 const projects = [
   {
+    title: "PICO",
+    tag: "Consumer & B2B Product",
+    desc: "Grocery price comparison with a B2B experience for clearer market-pricing insights.",
+    href: "https://pico-test-alpha.vercel.app/home",
+    image: "/portfolio/pico-specials.jpeg",
+    external: true,
+  },
+  {
     title: "TraceIT",
-    tag: "Ruby on Rails · AWS",
-    desc: "QR-powered product tracking with role-based dashboards and real-time analytics.",
+    tag: "Web Application",
+    desc: "QR-powered product traceability platform with role-based dashboards and tracking workflows.",
     href: "https://traceit.in",
-    image: "/t.png",
+    image: "/portfolio/traceit.png",
     external: true,
   },
   {
-    title: "Ani-ike (Anime Website)",
-    tag: "Next.js · Tailwind · Framer Motion · Vercel",
-    desc: "Smooth anime info website with buttery scroll and responsive layouts.",
-    href: "https://anime.theokcompany.in",
-    image: "/a.png",
-    external: true,
-  },
-  {
-    title: "Livinnovate",
-    tag: "React · Fastapi",
-    desc: "Modern services site with clean structure, elegant UI, and strong SEO foundation.",
-    href: "https://www.livinnovate.com/",
-    image: "/l.png",
+    title: "DataMonk",
+    tag: "Business Website",
+    desc: "Modern business website focused on clear presentation, responsiveness, performance, and SEO.",
+    href: "https://datamonk.dev",
+    image: "/portfolio/datamonk.png",
     external: true,
   },
 ];
@@ -84,7 +84,7 @@ export default function HomePage() {
             href="/projects"
             className="glass px-4 py-2 md:px-5 md:py-2.5 rounded-xl hover:opacity-90 transition text-sm md:text-base text-center"
           >
-            View Projects
+            View Work
           </Link>
           <Link
             href="/contact"
@@ -99,7 +99,7 @@ export default function HomePage() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm md:text-base opacity-75"
         >
-          <li>Next.js · Rails · Python</li>
+          <li>Next.js · Python</li>
           <span className="opacity-40">•</span>
           <li>Lighthouse 95+ targets</li>
           <span className="opacity-40">•</span>
@@ -176,22 +176,22 @@ export default function HomePage() {
               <Link href="/about" className="glass px-4 py-2 md:px-5 md:py-2.5 rounded-xl hover:opacity-90 transition text-sm md:text-base text-center">
                 Learn more
               </Link>
-              <Link href="/services" className="px-4 py-2 md:px-5 md:py-2.5 rounded-xl border border-white/15 hover:bg-white/5 transition text-sm md:text-base text-center">
-                Services
+              <Link href="/projects" className="px-4 py-2 md:px-5 md:py-2.5 rounded-xl border border-white/15 hover:bg-white/5 transition text-sm md:text-base text-center">
+                View Work
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ===== ANIME (Ani-ike) SPOTLIGHT ===== */}
+      {/* ===== PICO SPOTLIGHT ===== */}
       <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 md:pb-16 lg:pb-20">
         <div className="glass rounded-2xl p-4 md:p-6 lg:p-8 flex flex-col md:flex-row items-stretch gap-4">
           <div className="md:w-1/2 rounded-lg overflow-hidden">
             <div className="relative aspect-video min-h-[220px]">
               <Image
-                src="/a.png"
-                alt="Ani-ike cover"
+                src="/portfolio/pico-specials.jpeg"
+                alt="PICO grocery price comparison product"
                 fill
                 unoptimized
                 sizes="(min-width:1024px) 50vw, 100vw"
@@ -201,20 +201,20 @@ export default function HomePage() {
           </div>
 
           <div className="md:w-1/2 flex flex-col justify-center">
-            <div className="text-xs uppercase tracking-wide opacity-70">{projects[1].tag}</div>
-            <h3 className="mt-2 text-xl md:text-2xl font-semibold">Ani-ike (Anime Website)</h3>
+            <div className="text-xs uppercase tracking-wide opacity-70">{projects[0].tag}</div>
+            <h3 className="mt-2 text-xl md:text-2xl font-semibold">PICO</h3>
             <p className="mt-2 opacity-80 text-sm md:text-base">
-              Smooth anime info website with buttery scroll, curated episode lists, and responsive layouts.
+              Grocery price comparison with a B2B experience for market-pricing insights and more confident decisions.
             </p>
 
             <div className="mt-4 flex flex-wrap gap-3">
               <a
-                href="https://anime.theokcompany.in"
+                href="https://pico-test-alpha.vercel.app/home"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="glass px-4 py-2 rounded-xl hover:opacity-95 transition text-sm md:text-base"
               >
-                Visit Ani-ike
+                Visit PICO
               </a>
 
            
@@ -228,7 +228,7 @@ export default function HomePage() {
         <div className="flex items-end justify-between mb-4 md:mb-6">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Featured Work</h2>
           <Link href="/projects" className="text-sm md:text-base opacity-80 hover:opacity-100 underline underline-offset-4">
-            See all
+            See all work
           </Link>
         </div>
 
@@ -277,63 +277,56 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== SERVICES + CTA ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-16 md:pb-10 lg:pb-8">
-  <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
+      {/* ===== SERVICES ===== */}
+      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 md:pb-16 lg:pb-20">
+        <div className="text-center mb-8 md:mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Services — Build, Polish, Launch</h2>
+          <p className="mt-3 max-w-2xl mx-auto text-sm md:text-base opacity-80">
+            I help teams turn ideas into impact — product, operations, brand and short-form edits.
+          </p>
+        </div>
 
-    {/* ---- WHAT I DO ---- */}
-    <motion.div
-  initial={{ opacity: 0, y: 8 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  className="glass rounded-2xl p-5 md:p-6 lg:p-7 w-full "
->
-  <h2 className="text-2xl md:text-3xl font-bold tracking-tight">What I Do</h2>
-  <p className="mt-2 text-sm md:text-base opacity-80">
-    I help founders and teams bring ideas to life - fast, polished, and end-to-end.
-  </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          {[
+            ["3+", "Years of Experience"],
+            ["50+", "Projects shipped"],
+            ["Fast", "Preview-driven iterations"],
+          ].map(([value, label], i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.03 }}
+              className="glass rounded-2xl p-6 text-center"
+            >
+              <div className="text-3xl font-semibold">{value}</div>
+              <div className="text-xs opacity-80 mt-1">{label}</div>
+            </motion.div>
+          ))}
+        </div>
 
-  <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-sm md:text-base">
-    {/* Web Apps */}
-    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
-      <span className="text-xl">🖥️</span>
-      <span className="font-semibold">Web Experiences</span>
-      <p className="text-xs md:text-sm opacity-70">
-        Fast, modern, and smooth - built for real users.
-      </p>
-    </li>
-
-    {/* Backends */}
-    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
-      <span className="text-xl">⚙️</span>
-      <span className="font-semibold">Systems & Logic</span>
-      <p className="text-xs md:text-sm opacity-70">
-        Reliable data flows, automation, and dashboards.
-      </p>
-    </li>
-
-    {/* Deployments */}
-    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
-      <span className="text-xl">☁️</span>
-      <span className="font-semibold">Deployments</span>
-      <p className="text-xs md:text-sm opacity-70">
-        Stable launches with monitoring & scalability.
-      </p>
-    </li>
-
-    {/* Video Editing */}
-    <li className="rounded-xl border border-white/10 p-4 flex flex-col gap-1">
-      <span className="text-xl">🎬</span>
-      <span className="font-semibold">Cinematic Edits</span>
-      <p className="text-xs md:text-sm opacity-70">
-        Reels, vlogs & promos with sharp storytelling.
-      </p>
-    </li>
-  </ul>
-</motion.div>
-
-  </div>
-</section>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            ["Product & Engineering", "Reliable product outcomes", "From brief → preview → launch"],
+            ["Deploy & Operate", "Keep it healthy", "Previews, monitoring, rollbacks"],
+            ["Design & Brand", "Clarity-first visuals", "Reusable UI & marketing assets"],
+          ].map(([title, tag, detail], i) => (
+            <motion.article
+              key={title}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.04 }}
+              className="glass rounded-2xl p-5 md:p-6"
+            >
+              <h3 className="text-base md:text-lg font-semibold">{title}</h3>
+              <p className="text-sm opacity-75 mt-1">{tag}</p>
+              <p className="text-xs opacity-70 mt-4">{detail}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
 {/* ===== TECH LOGOS (compact infographic style) ===== */}
 <section className="relative z-10 mx-auto max-w-6xl px-4 pb-10 md:pb-16 lg:pb-10  pt-8">
   <div className="glass rounded-2xl p-5 md:p-6 lg:p-8 bg-white border-t ">
@@ -420,7 +413,7 @@ export default function HomePage() {
           href="/projects"
           className="inline-block px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 transition text-sm"
         >
-          See case studies
+          See work
         </a>
       </div>
     </div>

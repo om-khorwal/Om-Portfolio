@@ -3,101 +3,88 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { summary } from "framer-motion/client";
-
-// ---- DESIGN PROJECTS ----
-const designProjects = [
-  {
-    title: "BMF — Buildmyflow",
-    tag: "Product Design · Figma",
-    img: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763229778/Screenshot_from_2025-11-15_18-07-13_xy6tgn.png",
-    summary: "Complete product design for a no-code workflow automation tool.",
-    link: "https://www.figma.com/design/KahM52ankr6DGvXZJ7cpVF/BMF--Buildmyflow?node-id=0-1&p=f",
-    badges: ["Component-driven", "Prototypes"],
-  },
-  {
-    title: "OCS",
-    tag: "UI/UX · Figma",
-    img: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763229903/31beb1e8-c0e4-4e81-9433-8f743eddffac.png",
-    summary: "Community platform design with engaging, hero-focused layouts.",
-    link: "https://www.figma.com/design/IKw4sk8SK2HbPCwNdsjxhX/OCS?node-id=0-1&p=f",
-    badges: ["Hero-focused", "Responsive"],
-  },
-  {
-    title: "Valutics",
-    tag: "Web-App · Figma",
-    img: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763229874/b7bd832f-ee06-4e2f-b220-ff8fc58f0ca1.png",
-    summary: "Client web app for IT service management.",
-    link: "https://www.figma.com/design/2SXZDIpUFvGNSk4MXdX7kl/Valutics-Landing-Page?node-id=0-1&p=f",
-    badges: ["Design system", "Landing UX"],
-  },
-  {
-    title: "Ad2ship Dashboard",
-    tag: "Dashboard design · Figma",
-    img: "https://res.cloudinary.com/duljp6zqa/image/upload/v1769861168/d2ea3a72-2aa2-4fb7-a0d1-106309cef7f9.png",
-    summary: "Dashboard design for a shipping and logistics platform.",
-    link: "https://www.figma.com/design/7bDO9Pb0DtEfZ0wqjGzFHA/Untitled?node-id=2-262&t=nFUxWcNOrv0IFjL8-0",
-    badges: ["Design system", "Landing UX"],
-  },
-];
 
 // ---- DEV PROJECTS ----
 const devProjects = [
   {
-    title: "TraceIT",
-    tag: "Ruby on Rails",
-    summary: "QR-powered product tracking with role-based dashboards.",
-    link: "https://traceit.in",
-    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763099904/t_bggdu4.png",
-    badges: ["-40% load time", "+99.9% uptime"],
-  },
-  {
-    title: "DataMonk",
-    tag: "Next.js · Tailwind CSS · Framer Motion",
-    summary: "Datamonk official business website with SEO optimizations.",
-    link: "https://datamonk.dev",
-    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1763631076/5f77e88e-b2c2-4f88-9297-a4fe0a25121a.png",
-    badges: ["Modern Website",],
+    title: "PICO",
+    tag: "Consumer & B2B Product",
+    summary: "A grocery price-comparison product with a B2B experience for market-pricing insights and more confident decisions.",
+    link: "https://pico-test-alpha.vercel.app/home",
+    image: "/portfolio/pico-specials.jpeg",
+    badges: ["Product engineering", "Consumer product", "B2B experience"],
   },
   {
     title: "Livinnovate",
-    tag: "React · Fastapi",
-    summary: "Website with clean structure, elegant UI, and strong SEO.",
-    href: "https://livinnovate.com/",
-    image: "/l.png",
-    badges: ["Clear & Scalable code",],
+    tag: "Business / Community Website",
+    summary: "Responsive platform with structured content, modern UI, community-focused sections, and an SEO-friendly foundation.",
+    link: "https://livinnovate.com/",
+    image: "/portfolio/livinnovate.png",
+    badges: ["Community", "Responsive", "SEO"],
+  },
+  {
+    title: "TraceIT",
+    tag: "Web Application",
+    summary: "QR-powered product traceability platform with role-based dashboards and product tracking workflows.",
+    link: "https://traceit.in",
+    image: "/portfolio/traceit.png",
+    badges: ["Traceability", "Dashboards", "QR"],
   },
   {
     title: "Agaate",
-    tag: "Agri-tech · Landing Page",
-    summary: "Professional clean website for products and services related to nursery tech.",
-    href: "https://agaate.theokcompany.in/",
-    image: "/agaate.png",
-    badges: ["Clear & Scalable code",],
+    tag: "AgriTech Website",
+    summary: "Website for an agriculture technology business, presenting its products, services, and technology-driven approach.",
+    link: "https://agaate.in/",
+    image: "/portfolio/agaate.png",
+    badges: ["AgriTech", "Business website", "UI/UX"],
   },
   {
-    title: "Ani-ike",
-    tag: "Anime Info website",
-    summary: "Professional clean website for info related to anime.",
-    href: "https://anime.theokcompany.in/",
-    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1769862038/1a4f6c82-11e7-4f13-a818-5bde3974c8b9.png",
-    badges: ["API integration and responsive design",],
+    title: "Ani-ite",
+    tag: "Web Application",
+    summary: "Anime discovery and information website with API integration, responsive layouts, and a modern browsing experience.",
+    link: "https://anime.theokcompany.in/",
+    image: "/portfolio/ani-ite.png",
+    badges: ["API integration", "Responsive", "Discovery"],
+  },
+  {
+    title: "InsightUI AI",
+    tag: "AI / Website Intelligence",
+    summary: "An AI-powered website auditing platform that turns a website URL into actionable design, UX, performance, SEO, accessibility, and technical insights.",
+    link: "",
+    image: "/portfolio/insightui-ai.png",
+    badges: ["AI", "Product engineering", "UI/UX", "Technical consulting"],
+  },
+  {
+    title: "Customer Feedback Intelligence",
+    tag: "AI Automation / Business Workflow",
+    summary: "An AI workflow that turns feedback from emails, product reviews, and support tickets into recurring themes and actionable insights.",
+    link: "",
+    image: "/portfolio/customer-feedback-intelligence.png",
+    badges: ["AI Automation", "LLM", "Workflow Automation", "Product Engineering"],
+  },
+  {
+    title: "DataMonk",
+    tag: "Business Website",
+    summary: "Modern business website focused on clear presentation, responsiveness, performance, and SEO.",
+    link: "https://datamonk.dev",
+    image: "/portfolio/datamonk.png",
+    badges: ["Responsive", "Performance", "SEO"],
   },
   {
     title: "NotesFlow",
     tag: "Freelance · Full-stack Web App",
     summary: "Professional notes and tasks system — capture ideas, manage work, and share anything instantly with rich formatting and dark mode.",
-    href: "https://notes-flow.theokcompany.in/",
+    link: "https://notes-flow.theokcompany.in/",
     image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1776624869/07ebdf63-c67c-4fd0-90e7-aa2c88dd2ace.png",
     badges: ["Rich Notes", "Task Management", "Secure Sharing"],
   },
 ];
 
-type TabKey = "Design" | "Development" | "Videos";
-const TABS: TabKey[] = ["Design", "Development", "Videos"];
+type TabKey = "Development" | "Videos";
+const TABS: TabKey[] = ["Development", "Videos"];
 
 export default function ProjectsPage() {
-  const [active, setActive] = useState<TabKey>("Design");
+  const [active, setActive] = useState<TabKey>("Development");
 
   // YOUTUBE FROM BACKEND API
   const [youtubeVideos, setYoutubeVideos] = useState<any[]>([]);
@@ -127,14 +114,14 @@ export default function ProjectsPage() {
     <main>
       {/* Header */}
       <header className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">Projects</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">Work</h1>
         <p className="mt-2 text-sm sm:text-base opacity-80">
-          Three lenses on my work: visual design, full-stack development, and video edits.
+          Full-stack development work and video edits.
         </p>
       </header>
 
       {/* Tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
         {TABS.map((tab) => {
           const isActive = active === tab;
           return (
@@ -156,7 +143,6 @@ export default function ProjectsPage() {
                 <div className="text-xs uppercase opacity-70">Category</div>
                 <div className="mt-1 text-base md:text-lg font-semibold">{tab}</div>
                 <p className="mt-1 text-xs md:text-sm opacity-75">
-                  {tab === "Design" && "Product, UI/UX & systems."}
                   {tab === "Development" && "Dashboards, workflows & backends."}
                   {tab === "Videos" && "Shorts, cinematic edits & vlogs."}
                 </p>
@@ -169,53 +155,6 @@ export default function ProjectsPage() {
       {/* Content */}
       <div className="min-h-[320px]">
         <AnimatePresence mode="wait">
-          {/* DESIGN TAB */}
-          {active === "Design" && (
-            <motion.section
-              key="design"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {designProjects.map((p, i) => (
-                <a key={p.title} href={p.link} target="_blank" rel="noopener noreferrer">
-                  <motion.div
-                    className="group glass rounded-2xl p-4 sm:p-5 h-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    whileHover={{ y: -3 }}
-                  >
-                    <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
-                      <img
-                        src={p.img}
-                        alt={p.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-20 transition" />
-                    </div>
-
-                    <div className="text-xs uppercase opacity-70">{p.tag}</div>
-                    <h3 className="text-lg font-semibold mt-1">{p.title}</h3>
-                    <p className="text-sm opacity-80 mt-2">{p.summary}</p>
-
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {p.badges.map((b) => (
-                        <span key={b} className="px-2 py-1 text-xs border border-white/15 rounded-lg">
-                          {b}
-                        </span>
-                      ))}
-                    </div>
-                  </motion.div>
-                </a>
-              ))}
-            </motion.section>
-          )}
-
           {/* DEVELOPMENT TAB */}
           {active === "Development" && (
             <motion.section
@@ -227,8 +166,9 @@ export default function ProjectsPage() {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
             >
               {devProjects.map((p, i) => (
-                <a key={p.title} href={p.link} target="_blank">
-                  <motion.div
+                p.link ? (
+                  <a key={p.title} href={p.link} target="_blank" rel="noopener noreferrer">
+                    <motion.div
                     className="group glass rounded-2xl p-4 sm:p-5 h-full"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -252,8 +192,33 @@ export default function ProjectsPage() {
                         </span>
                       ))}
                     </div>
+                    </motion.div>
+                  </a>
+                ) : (
+                  <motion.div
+                    key={p.title}
+                    className="group glass rounded-2xl p-4 sm:p-5 h-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                    whileHover={{ y: -3 }}
+                  >
+                    <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
+                      <Image src={p.image} alt={p.title} fill className="object-cover" />
+                    </div>
+                    <div className="text-xs uppercase opacity-70">{p.tag}</div>
+                    <h3 className="text-xl font-semibold mt-1">{p.title}</h3>
+                    <p className="text-sm opacity-80 mt-2">{p.summary}</p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {p.badges.map((b) => (
+                        <span key={b} className="px-2 py-1 text-xs border border-white/15 rounded-lg">
+                          {b}
+                        </span>
+                      ))}
+                    </div>
                   </motion.div>
-                </a>
+                )
               ))}
             </motion.section>
           )}
