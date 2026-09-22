@@ -26,11 +26,12 @@ function ArrowUpRightIcon({ className = "" }: { className?: string }) {
 // ---- DEV PROJECTS ----
 const devProjects = [
   {
-    title: "PICO",
+    title: "THOSE",
     tag: "Consumer & B2B Product",
     summary: "A grocery price-comparison product with a B2B experience for market-pricing insights and more confident decisions.",
+    note: "Currently available only in New Zealand.",
     link: "https://pico-test-alpha.vercel.app/home",
-    image: "/portfolio/pico-specials.jpeg",
+    image: "/portfolio/those.jpeg",
     badges: ["Product engineering", "Consumer product", "B2B experience"],
   },
   {
@@ -50,9 +51,9 @@ const devProjects = [
     badges: ["Traceability", "Dashboards", "QR"],
   },
   {
-    title: "Agaate",
+    title: "Aggate",
     tag: "AgriTech Website",
-    summary: "Website for an agriculture technology business, presenting its products, services, and technology-driven approach.",
+    summary: "Professional website for an agriculture technology business showcasing its products, services, and technology-driven approach.",
     link: "https://agaate.in/",
     image: "/portfolio/agaate.png",
     badges: ["AgriTech", "Business website", "UI/UX"],
@@ -68,7 +69,7 @@ const devProjects = [
   {
     title: "InsightUI AI",
     tag: "AI / Website Intelligence",
-    summary: "An AI-powered website auditing platform that turns a website URL into actionable design, UX, performance, SEO, accessibility, and technical insights.",
+    summary: "An AI-powered website auditing platform designed to turn a website URL into actionable insights across design, UX, performance, SEO, accessibility, and technical quality.",
     link: "",
     image: "/portfolio/insightui-ai.png",
     badges: ["AI", "Product engineering", "UI/UX", "Technical consulting"],
@@ -76,7 +77,7 @@ const devProjects = [
   {
     title: "Customer Feedback Intelligence",
     tag: "AI Automation / Business Workflow",
-    summary: "An AI workflow that turns feedback from emails, product reviews, and support tickets into recurring themes and actionable insights.",
+    summary: "An AI-powered workflow that turns scattered customer feedback from emails, product reviews, and support tickets into recurring themes and actionable insights.",
     link: "",
     image: "/portfolio/customer-feedback-intelligence.png",
     badges: ["AI Automation", "LLM", "Workflow Automation", "Product Engineering"],
@@ -84,10 +85,26 @@ const devProjects = [
   {
     title: "DataMonk",
     tag: "Business Website",
-    summary: "Modern business website focused on clear presentation, responsiveness, performance, and SEO.",
+    summary: "Modern business website built with a strong focus on presentation, responsiveness, performance, and SEO.",
     link: "https://datamonk.dev",
     image: "/portfolio/datamonk.png",
     badges: ["Responsive", "Performance", "SEO"],
+  },
+  {
+    title: "Ad2ship Dashboard",
+    tag: "Dashboard Design / Figma",
+    summary: "Data-rich dashboard design for a shipping and logistics platform, focused on making operational information easy to understand.",
+    link: "https://www.figma.com/design/7bDO9Pb0DtEfZ0wqjGzFHA/Untitled?node-id=2-262&t=nFUxWcNOrv0IFjL8-0",
+    image: "/portfolio/ad2ship-dashboard.png",
+    badges: ["Dashboard", "Logistics", "Figma"],
+  },
+  {
+    title: "BMF – Buildmyflow",
+    tag: "Product Design / Figma",
+    summary: "Complete product design for a no-code workflow automation platform, covering key screens, workflows, and the overall product experience.",
+    link: "https://www.figma.com/design/KahM52ankr6DGvXZJ7cpVF/BMF--Buildmyflow?node-id=0-1&p=f",
+    image: "/portfolio/buildmyflow.png",
+    badges: ["Product design", "Figma", "Workflows"],
   },
   {
     title: "NotesFlow",
@@ -115,13 +132,16 @@ function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
         />
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-30 transition" />
       </div>
-      <div className="flex flex-1 flex-col p-5 md:p-6">
+      <div className="flex flex-1 flex-col p-5">
         <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] opacity-70">
           {project.tag}
         </p>
-        <h3 className="mt-3 text-xl font-semibold tracking-tight">{project.title}</h3>
+        <h3 className="mt-3 text-lg font-semibold tracking-tight">{project.title}</h3>
+        {project.note && (
+          <p className="mt-1 text-xs font-medium opacity-60">{project.note}</p>
+        )}
         <p className="mt-3 text-sm leading-relaxed opacity-80">{project.summary}</p>
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {project.badges.map((b) => (
             <span key={b} className="px-2 py-1 text-xs border border-white/15 rounded-lg">
               {b}
@@ -129,7 +149,7 @@ function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
           ))}
         </div>
         {project.link && (
-          <span className="mt-auto pt-6 inline-flex items-center gap-1 text-sm underline opacity-80 group-hover:opacity-100">
+          <span className="mt-auto pt-5 inline-flex items-center gap-1 text-sm underline opacity-80 group-hover:opacity-100">
             Visit project <ArrowUpRightIcon className="h-4 w-4" />
           </span>
         )}
@@ -181,25 +201,18 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <main className="relative overflow-hidden">
-      {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 -z-10 bg-mesh opacity-40 pointer-events-none" />
-        <div className="mx-auto max-w-3xl px-4 py-16 sm:py-20 lg:py-24 text-center">
-          <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest opacity-70">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-            Selected projects
-          </span>
-          <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Our Work</h1>
-          <p className="mx-auto mt-5 max-w-2xl opacity-80 text-base md:text-lg">
-            A selection of products, platforms, websites, and video edits I've designed and built.
-          </p>
-        </div>
-      </section>
+    <main className="space-y-10">
+      {/* Intro */}
+      <header>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Work</h1>
+        <p className="mt-2 opacity-80">
+          A selection of products, platforms, websites, and video edits I&apos;ve designed and built.
+        </p>
+      </header>
 
-      {/* ===== TABS + CONTENT ===== */}
-      <section className="mx-auto max-w-6xl px-4 py-10 md:py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-10">
+      {/* Tabs */}
+      <section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
           {TABS.map((tab) => {
             const isActive = active === tab;
             return (
@@ -241,15 +254,15 @@ export default function ProjectsPage() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="mb-8 md:mb-10 max-w-2xl">
+                <div className="mb-6 max-w-2xl">
                   <p className="text-xs uppercase tracking-widest opacity-70">
                     Design, engineering &amp; experimentation
                   </p>
-                  <h2 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight">
+                  <h2 className="mt-2 text-xl sm:text-2xl font-bold tracking-tight">
                     Built to make complex work clearer.
                   </h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {devProjects.map((p, i) => (
                     <motion.div
                       key={p.title}
@@ -346,32 +359,18 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* ===== CTA ===== */}
-      <section className="mx-auto max-w-6xl px-4 pb-12 md:pb-16 lg:pb-20">
-        <div className="relative overflow-hidden rounded-3xl glass px-6 py-16 sm:px-12 sm:py-20 text-center">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 select-none text-[12rem] font-extrabold leading-none text-white/[0.03] sm:text-[18rem]"
-          >
-            OK
-          </div>
-          <div className="relative mx-auto max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-              Have a project or problem you want to solve?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl opacity-80">
-              Whether you need a product built, an existing system improved, or simply want to
-              explore an idea, let&apos;s talk.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <Link
-                href="/contact"
-                className="glass px-5 py-2.5 rounded-xl hover:opacity-90 transition"
-              >
-                Start a Conversation
-              </Link>
-            </div>
-          </div>
+      {/* CTA */}
+      <section className="glass rounded-2xl p-6">
+        <h2 className="text-lg font-semibold">Have a project or problem you want to solve?</h2>
+        <p className="mt-2 opacity-85">
+          Whether you need a product built, an existing system improved, or simply want to
+          explore an idea, let&apos;s talk.
+        </p>
+
+        <div className="mt-4">
+          <Link href="/contact" className="glass rounded-xl px-4 py-2 text-sm hover:opacity-90 transition">
+            Start a Conversation
+          </Link>
         </div>
       </section>
     </main>

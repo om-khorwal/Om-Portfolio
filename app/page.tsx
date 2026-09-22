@@ -11,11 +11,11 @@ const fadeUp = {
 
 const projects = [
   {
-    title: "PICO",
+    title: "THOSE",
     tag: "Consumer & B2B Product",
     desc: "Grocery price comparison with a B2B experience for clearer market-pricing insights.",
     href: "https://pico-test-alpha.vercel.app/home",
-    image: "/portfolio/pico-specials.jpeg",
+    image: "/portfolio/those.jpeg",
     external: true,
   },
   {
