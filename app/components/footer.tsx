@@ -8,7 +8,6 @@ const links = {
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
     { label: "Work", href: "/projects" },
-    { label: "Blog", href: "/blog" },
   ],
   cool: [
     { label: "Instagram", href: "https://www.instagram.com/_om_khorwal/ ", external: true },

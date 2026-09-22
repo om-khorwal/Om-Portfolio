@@ -2,7 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+
+function ArrowUpRightIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M7 17 17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
+  );
+}
 
 // ---- DEV PROJECTS ----
 const devProjects = [
@@ -83,6 +102,57 @@ const devProjects = [
 type TabKey = "Development" | "Videos";
 const TABS: TabKey[] = ["Development", "Videos"];
 
+function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
+  const content = (
+    <>
+      <div className="relative aspect-video overflow-hidden">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          unoptimized
+          className="object-cover transition duration-500 group-hover:scale-[1.02]"
+        />
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-30 transition" />
+      </div>
+      <div className="flex flex-1 flex-col p-5 md:p-6">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] opacity-70">
+          {project.tag}
+        </p>
+        <h3 className="mt-3 text-xl font-semibold tracking-tight">{project.title}</h3>
+        <p className="mt-3 text-sm leading-relaxed opacity-80">{project.summary}</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {project.badges.map((b) => (
+            <span key={b} className="px-2 py-1 text-xs border border-white/15 rounded-lg">
+              {b}
+            </span>
+          ))}
+        </div>
+        {project.link && (
+          <span className="mt-auto pt-6 inline-flex items-center gap-1 text-sm underline opacity-80 group-hover:opacity-100">
+            Visit project <ArrowUpRightIcon className="h-4 w-4" />
+          </span>
+        )}
+      </div>
+    </>
+  );
+
+  return project.link ? (
+    <a
+      href={project.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group glass flex h-full flex-col overflow-hidden rounded-2xl"
+    >
+      {content}
+    </a>
+  ) : (
+    <article className="group glass flex h-full flex-col overflow-hidden rounded-2xl">
+      {content}
+    </article>
+  );
+}
+
 export default function ProjectsPage() {
   const [active, setActive] = useState<TabKey>("Development");
 
@@ -111,195 +181,199 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <main>
-      {/* Header */}
-      <header className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">Work</h1>
-        <p className="mt-2 text-sm sm:text-base opacity-80">
-          Full-stack development work and video edits.
-        </p>
-      </header>
+    <main className="relative overflow-hidden">
+      {/* ===== HERO ===== */}
+      <section className="relative overflow-hidden border-b border-white/10">
+        <div className="absolute inset-0 -z-10 bg-mesh opacity-40 pointer-events-none" />
+        <div className="mx-auto max-w-3xl px-4 py-16 sm:py-20 lg:py-24 text-center">
+          <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest opacity-70">
+            <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
+            Selected projects
+          </span>
+          <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Our Work</h1>
+          <p className="mx-auto mt-5 max-w-2xl opacity-80 text-base md:text-lg">
+            A selection of products, platforms, websites, and video edits I've designed and built.
+          </p>
+        </div>
+      </section>
 
-      {/* Tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-        {TABS.map((tab) => {
-          const isActive = active === tab;
-          return (
-            <button
-              key={tab}
-              onClick={() => setActive(tab)}
-              className={`relative rounded-2xl border border-white/10 px-4 py-3 text-left transition ${
-                isActive ? "text-white" : "text-slate-300 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="tabGlow"
-                  className="absolute inset-0 rounded-2xl bg-white/8"
-                  transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                />
-              )}
-              <div className="relative z-10">
-                <div className="text-xs uppercase opacity-70">Category</div>
-                <div className="mt-1 text-base md:text-lg font-semibold">{tab}</div>
-                <p className="mt-1 text-xs md:text-sm opacity-75">
-                  {tab === "Development" && "Dashboards, workflows & backends."}
-                  {tab === "Videos" && "Shorts, cinematic edits & vlogs."}
-                </p>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Content */}
-      <div className="min-h-[320px]">
-        <AnimatePresence mode="wait">
-          {/* DEVELOPMENT TAB */}
-          {active === "Development" && (
-            <motion.section
-              key="development"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {devProjects.map((p, i) => (
-                p.link ? (
-                  <a key={p.title} href={p.link} target="_blank" rel="noopener noreferrer">
-                    <motion.div
-                    className="group glass rounded-2xl p-4 sm:p-5 h-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    whileHover={{ y: -3 }}
-                  >
-                    <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
-                      <Image src={p.image} alt={p.title} fill className="object-cover" />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-30 transition" />
-                    </div>
-
-                    <div className="text-xs uppercase opacity-70">{p.tag}</div>
-                    <h3 className="text-xl font-semibold mt-1">{p.title}</h3>
-                    <p className="text-sm opacity-80 mt-2">{p.summary}</p>
-
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {p.badges.map((b) => (
-                        <span key={b} className="px-2 py-1 text-xs border border-white/15 rounded-lg">
-                          {b}
-                        </span>
-                      ))}
-                    </div>
-                    </motion.div>
-                  </a>
-                ) : (
+      {/* ===== TABS + CONTENT ===== */}
+      <section className="mx-auto max-w-6xl px-4 py-10 md:py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-10">
+          {TABS.map((tab) => {
+            const isActive = active === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActive(tab)}
+                className={`relative rounded-2xl border border-white/10 px-4 py-3 text-left transition ${
+                  isActive ? "text-white" : "text-slate-300 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {isActive && (
                   <motion.div
-                    key={p.title}
-                    className="group glass rounded-2xl p-4 sm:p-5 h-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    whileHover={{ y: -3 }}
-                  >
-                    <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
-                      <Image src={p.image} alt={p.title} fill className="object-cover" />
+                    layoutId="tabGlow"
+                    className="absolute inset-0 rounded-2xl bg-white/8"
+                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                  />
+                )}
+                <div className="relative z-10">
+                  <div className="text-xs uppercase opacity-70">Category</div>
+                  <div className="mt-1 text-base md:text-lg font-semibold">{tab}</div>
+                  <p className="mt-1 text-xs md:text-sm opacity-75">
+                    {tab === "Development" && "Dashboards, workflows & backends."}
+                    {tab === "Videos" && "Shorts, cinematic edits & vlogs."}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="min-h-[320px]">
+          <AnimatePresence mode="wait">
+            {/* DEVELOPMENT TAB */}
+            {active === "Development" && (
+              <motion.section
+                key="development"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="mb-8 md:mb-10 max-w-2xl">
+                  <p className="text-xs uppercase tracking-widest opacity-70">
+                    Design, engineering &amp; experimentation
+                  </p>
+                  <h2 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight">
+                    Built to make complex work clearer.
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {devProjects.map((p, i) => (
+                    <motion.div
+                      key={p.title}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: (i % 3) * 0.07 }}
+                      whileHover={{ y: -3 }}
+                      className="h-full"
+                    >
+                      <ProjectCard project={p} />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.section>
+            )}
+
+            {/* VIDEOS TAB */}
+            {active === "Videos" && (
+              <motion.section
+                key="videos"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="grid grid-cols-1 gap-6"
+              >
+                {/* LOADING */}
+                {videosLoading && (
+                  <div className="glass rounded-2xl p-6 text-center">Loading latest uploads...</div>
+                )}
+
+                {/* NO DATA */}
+                {!videosLoading && youtubeVideos.length === 0 && (
+                  <div className="glass rounded-2xl p-6 text-center">No videos found.</div>
+                )}
+
+                {/* FEATURED VIDEO */}
+                {!videosLoading && selectedVideo && (
+                  <div className="glass rounded-2xl overflow-hidden">
+                    <div className="relative aspect-video">
+                      <iframe
+                        className="w-full h-full"
+                        src={`https://www.youtube.com/embed/${selectedVideo.id}`}
+                        title={selectedVideo.title}
+                        allowFullScreen
+                      />
                     </div>
-                    <div className="text-xs uppercase opacity-70">{p.tag}</div>
-                    <h3 className="text-xl font-semibold mt-1">{p.title}</h3>
-                    <p className="text-sm opacity-80 mt-2">{p.summary}</p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {p.badges.map((b) => (
-                        <span key={b} className="px-2 py-1 text-xs border border-white/15 rounded-lg">
-                          {b}
-                        </span>
+                    <div className="p-4">
+                      <div className="text-xs uppercase text-fuchsia-300">
+                        {selectedVideo.category}
+                      </div>
+                      <h3 className="text-lg md:text-xl font-semibold mt-1">
+                        {selectedVideo.title}
+                      </h3>
+                      <p className="mt-2 text-sm opacity-80">{selectedVideo.desc}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* GRID OF MORE VIDEOS */}
+                {!videosLoading && youtubeVideos.length > 0 && (
+                  <div>
+                    <h4 className="text-sm md:text-base font-semibold mb-3">More uploads</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {youtubeVideos.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => setSelectedVideo(v)}
+                          className={`group rounded-lg overflow-hidden border border-white/10 ${
+                            selectedVideo?.id === v.id ? "ring-2 ring-white/20" : ""
+                          }`}
+                        >
+                          <div className="relative aspect-video">
+                            <img
+                              src={v.thumbnail}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                              alt={v.title}
+                            />
+                          </div>
+                          <div className="p-2">
+                            <div className="text-xs uppercase opacity-70">{v.category}</div>
+                            <div className="mt-1 text-sm font-medium">{v.title}</div>
+                          </div>
+                        </button>
                       ))}
                     </div>
-                  </motion.div>
-                )
-              ))}
-            </motion.section>
-          )}
-
-          {/* VIDEOS TAB */}
-          {active === "Videos" && (
-            <motion.section
-              key="videos"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="grid grid-cols-1 gap-6"
-            >
-              {/* LOADING */}
-              {videosLoading && (
-                <div className="glass rounded-2xl p-6 text-center">Loading latest uploads...</div>
-              )}
-
-              {/* NO DATA */}
-              {!videosLoading && youtubeVideos.length === 0 && (
-                <div className="glass rounded-2xl p-6 text-center">No videos found.</div>
-              )}
-
-              {/* FEATURED VIDEO */}
-              {!videosLoading && selectedVideo && (
-                <div className="glass rounded-2xl overflow-hidden">
-                  <div className="relative aspect-video">
-                    <iframe
-                      className="w-full h-full"
-                      src={`https://www.youtube.com/embed/${selectedVideo.id}`}
-                      title={selectedVideo.title}
-                      allowFullScreen
-                    />
                   </div>
-                  <div className="p-4">
-                    <div className="text-xs uppercase text-fuchsia-300">
-                      {selectedVideo.category}
-                    </div>
-                    <h3 className="text-lg md:text-xl font-semibold mt-1">
-                      {selectedVideo.title}
-                    </h3>
-                    <p className="mt-2 text-sm opacity-80">{selectedVideo.desc}</p>
-                  </div>
-                </div>
-              )}
+                )}
+              </motion.section>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
 
-              {/* GRID OF MORE VIDEOS */}
-              {!videosLoading && youtubeVideos.length > 0 && (
-                <div>
-                  <h4 className="text-sm md:text-base font-semibold mb-3">More uploads</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {youtubeVideos.map((v) => (
-                      <button
-                        key={v.id}
-                        onClick={() => setSelectedVideo(v)}
-                        className={`group rounded-lg overflow-hidden border border-white/10 ${
-                          selectedVideo?.id === v.id ? "ring-2 ring-white/20" : ""
-                        }`}
-                      >
-                        <div className="relative aspect-video">
-                          <img
-                            src={v.thumbnail}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            alt={v.title}
-                          />
-                        </div>
-                        <div className="p-2">
-                          <div className="text-xs uppercase opacity-70">{v.category}</div>
-                          <div className="mt-1 text-sm font-medium">{v.title}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </motion.section>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* ===== CTA ===== */}
+      <section className="mx-auto max-w-6xl px-4 pb-12 md:pb-16 lg:pb-20">
+        <div className="relative overflow-hidden rounded-3xl glass px-6 py-16 sm:px-12 sm:py-20 text-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 select-none text-[12rem] font-extrabold leading-none text-white/[0.03] sm:text-[18rem]"
+          >
+            OK
+          </div>
+          <div className="relative mx-auto max-w-2xl">
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Have a project or problem you want to solve?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl opacity-80">
+              Whether you need a product built, an existing system improved, or simply want to
+              explore an idea, let&apos;s talk.
+            </p>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/contact"
+                className="glass px-5 py-2.5 rounded-xl hover:opacity-90 transition"
+              >
+                Start a Conversation
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
