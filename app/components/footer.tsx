@@ -28,14 +28,14 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="inline-block">
-              <div className="text-sm uppercase tracking-widest text-white/70">theokcompany</div>
+              <div className="text-sm uppercase tracking-widest text-white/70">OKbuilds</div>
               <div className="h-[2px] w-7 bg-white mt-1" />
             </div>
             <p className="text-sm text-slate-300/90">
-              theokcompany builds fast, elegant web apps and cinematic edits that turn ideas into outcomes.
+              OKbuilds builds fast, elegant web apps and cinematic edits that turn ideas into outcomes.
             </p>
             <p className="text-xs text-slate-400">
-              © {new Date().getFullYear()} theokcompany
+              © {new Date().getFullYear()} OKbuilds
             </p>
           </div>
 
