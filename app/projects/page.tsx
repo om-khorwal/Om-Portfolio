@@ -1,9 +1,7 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { getPortfolioProjects, type PortfolioProject } from "@/lib/portfolio-projects";
+import ProjectTabs from "./project-tabs";
 
 function ArrowUpRightIcon({ className = "" }: { className?: string }) {
   return (
@@ -23,108 +21,12 @@ function ArrowUpRightIcon({ className = "" }: { className?: string }) {
   );
 }
 
-// ---- DEV PROJECTS ----
-const devProjects = [
-  {
-    title: "THOSE",
-    tag: "Consumer & B2B Product",
-    summary: "A grocery price-comparison product with a B2B experience for market-pricing insights and more confident decisions.",
-    note: "Currently available only in New Zealand.",
-    link: "https://pico-test-alpha.vercel.app/home",
-    image: "/portfolio/those.jpeg",
-    badges: ["Product engineering", "Consumer product", "B2B experience"],
-  },
-  {
-    title: "Livinnovate",
-    tag: "Business / Community Website",
-    summary: "Responsive platform with structured content, modern UI, community-focused sections, and an SEO-friendly foundation.",
-    link: "https://livinnovate.com/",
-    image: "/portfolio/livinnovate.png",
-    badges: ["Community", "Responsive", "SEO"],
-  },
-  {
-    title: "TraceIT",
-    tag: "Web Application",
-    summary: "QR-powered product traceability platform with role-based dashboards and product tracking workflows.",
-    link: "https://traceit.in",
-    image: "/portfolio/traceit.png",
-    badges: ["Traceability", "Dashboards", "QR"],
-  },
-  {
-    title: "Aggate",
-    tag: "AgriTech Website",
-    summary: "Professional website for an agriculture technology business showcasing its products, services, and technology-driven approach.",
-    link: "https://agaate.in/",
-    image: "/portfolio/agaate.png",
-    badges: ["AgriTech", "Business website", "UI/UX"],
-  },
-  {
-    title: "Ani-ite",
-    tag: "Web Application",
-    summary: "Anime discovery and information website with API integration, responsive layouts, and a modern browsing experience.",
-    link: "https://anime.theokcompany.in/",
-    image: "/portfolio/ani-ite.png",
-    badges: ["API integration", "Responsive", "Discovery"],
-  },
-  {
-    title: "InsightUI AI",
-    tag: "AI / Website Intelligence",
-    summary: "An AI-powered website auditing platform designed to turn a website URL into actionable insights across design, UX, performance, SEO, accessibility, and technical quality.",
-    link: "",
-    image: "/portfolio/insightui-ai.png",
-    badges: ["AI", "Product engineering", "UI/UX", "Technical consulting"],
-  },
-  {
-    title: "Customer Feedback Intelligence",
-    tag: "AI Automation / Business Workflow",
-    summary: "An AI-powered workflow that turns scattered customer feedback from emails, product reviews, and support tickets into recurring themes and actionable insights.",
-    link: "",
-    image: "/portfolio/customer-feedback-intelligence.png",
-    badges: ["AI Automation", "LLM", "Workflow Automation", "Product Engineering"],
-  },
-  {
-    title: "DataMonk",
-    tag: "Business Website",
-    summary: "Modern business website built with a strong focus on presentation, responsiveness, performance, and SEO.",
-    link: "https://datamonk.dev",
-    image: "/portfolio/datamonk.png",
-    badges: ["Responsive", "Performance", "SEO"],
-  },
-  {
-    title: "Ad2ship Dashboard",
-    tag: "Dashboard Design / Figma",
-    summary: "Data-rich dashboard design for a shipping and logistics platform, focused on making operational information easy to understand.",
-    link: "https://www.figma.com/design/7bDO9Pb0DtEfZ0wqjGzFHA/Untitled?node-id=2-262&t=nFUxWcNOrv0IFjL8-0",
-    image: "/portfolio/ad2ship-dashboard.png",
-    badges: ["Dashboard", "Logistics", "Figma"],
-  },
-  {
-    title: "BMF – Buildmyflow",
-    tag: "Product Design / Figma",
-    summary: "Complete product design for a no-code workflow automation platform, covering key screens, workflows, and the overall product experience.",
-    link: "https://www.figma.com/design/KahM52ankr6DGvXZJ7cpVF/BMF--Buildmyflow?node-id=0-1&p=f",
-    image: "/portfolio/buildmyflow.png",
-    badges: ["Product design", "Figma", "Workflows"],
-  },
-  {
-    title: "NotesFlow",
-    tag: "Freelance · Full-stack Web App",
-    summary: "Professional notes and tasks system — capture ideas, manage work, and share anything instantly with rich formatting and dark mode.",
-    link: "https://notes-flow.theokcompany.in/",
-    image: "https://res.cloudinary.com/duljp6zqa/image/upload/v1776624869/07ebdf63-c67c-4fd0-90e7-aa2c88dd2ace.png",
-    badges: ["Rich Notes", "Task Management", "Secure Sharing"],
-  },
-];
-
-type TabKey = "Development" | "Videos";
-const TABS: TabKey[] = ["Development", "Videos"];
-
-function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
+function ProjectCard({ project }: { project: PortfolioProject }) {
   const content = (
     <>
       <div className="relative aspect-video overflow-hidden">
         <Image
-          src={project.image}
+          src={project.image_url}
           alt={project.title}
           fill
           unoptimized
@@ -134,7 +36,7 @@ function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] opacity-70">
-          {project.tag}
+          {project.category_label}
         </p>
         <h3 className="mt-3 text-lg font-semibold tracking-tight">{project.title}</h3>
         {project.note && (
@@ -148,7 +50,7 @@ function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
             </span>
           ))}
         </div>
-        {project.link && (
+        {project.live_url && (
           <span className="mt-auto pt-5 inline-flex items-center gap-1 text-sm underline opacity-80 group-hover:opacity-100">
             Visit project <ArrowUpRightIcon className="h-4 w-4" />
           </span>
@@ -157,9 +59,9 @@ function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
     </>
   );
 
-  return project.link ? (
+  return project.live_url ? (
     <a
-      href={project.link}
+      href={project.live_url}
       target="_blank"
       rel="noopener noreferrer"
       className="group glass flex h-full flex-col overflow-hidden rounded-2xl"
@@ -173,32 +75,8 @@ function ProjectCard({ project }: { project: (typeof devProjects)[number] }) {
   );
 }
 
-export default function ProjectsPage() {
-  const [active, setActive] = useState<TabKey>("Development");
-
-  // YOUTUBE FROM BACKEND API
-  const [youtubeVideos, setYoutubeVideos] = useState<any[]>([]);
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
-  const [videosLoading, setVideosLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadVideos() {
-      try {
-        setVideosLoading(true);
-        const res = await fetch("/api/youtube/latest");
-        const data = await res.json();
-        const items = data.items || [];
-
-        setYoutubeVideos(items);
-        setSelectedVideo(items[0] || null);
-      } catch (err) {
-        console.error("Failed to fetch YouTube:", err);
-      } finally {
-        setVideosLoading(false);
-      }
-    }
-    loadVideos();
-  }, []);
+export default async function ProjectsPage() {
+  const projects = await getPortfolioProjects();
 
   return (
     <main className="space-y-10">
@@ -212,151 +90,12 @@ export default function ProjectsPage() {
 
       {/* Tabs */}
       <section>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-          {TABS.map((tab) => {
-            const isActive = active === tab;
-            return (
-              <button
-                key={tab}
-                onClick={() => setActive(tab)}
-                className={`relative rounded-2xl border border-white/10 px-4 py-3 text-left transition ${
-                  isActive ? "text-white" : "text-slate-300 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="tabGlow"
-                    className="absolute inset-0 rounded-2xl bg-white/8"
-                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                  />
-                )}
-                <div className="relative z-10">
-                  <div className="text-xs uppercase opacity-70">Category</div>
-                  <div className="mt-1 text-base md:text-lg font-semibold">{tab}</div>
-                  <p className="mt-1 text-xs md:text-sm opacity-75">
-                    {tab === "Development" && "Dashboards, workflows & backends."}
-                    {tab === "Videos" && "Shorts, cinematic edits & vlogs."}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="min-h-[320px]">
-          <AnimatePresence mode="wait">
-            {/* DEVELOPMENT TAB */}
-            {active === "Development" && (
-              <motion.section
-                key="development"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="mb-6 max-w-2xl">
-                  <p className="text-xs uppercase tracking-widest opacity-70">
-                    Design, engineering &amp; experimentation
-                  </p>
-                  <h2 className="mt-2 text-xl sm:text-2xl font-bold tracking-tight">
-                    Built to make complex work clearer.
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {devProjects.map((p, i) => (
-                    <motion.div
-                      key={p.title}
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: (i % 3) * 0.07 }}
-                      whileHover={{ y: -3 }}
-                      className="h-full"
-                    >
-                      <ProjectCard project={p} />
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.section>
-            )}
-
-            {/* VIDEOS TAB */}
-            {active === "Videos" && (
-              <motion.section
-                key="videos"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="grid grid-cols-1 gap-6"
-              >
-                {/* LOADING */}
-                {videosLoading && (
-                  <div className="glass rounded-2xl p-6 text-center">Loading latest uploads...</div>
-                )}
-
-                {/* NO DATA */}
-                {!videosLoading && youtubeVideos.length === 0 && (
-                  <div className="glass rounded-2xl p-6 text-center">No videos found.</div>
-                )}
-
-                {/* FEATURED VIDEO */}
-                {!videosLoading && selectedVideo && (
-                  <div className="glass rounded-2xl overflow-hidden">
-                    <div className="relative aspect-video">
-                      <iframe
-                        className="w-full h-full"
-                        src={`https://www.youtube.com/embed/${selectedVideo.id}`}
-                        title={selectedVideo.title}
-                        allowFullScreen
-                      />
-                    </div>
-                    <div className="p-4">
-                      <div className="text-xs uppercase text-fuchsia-300">
-                        {selectedVideo.category}
-                      </div>
-                      <h3 className="text-lg md:text-xl font-semibold mt-1">
-                        {selectedVideo.title}
-                      </h3>
-                      <p className="mt-2 text-sm opacity-80">{selectedVideo.desc}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* GRID OF MORE VIDEOS */}
-                {!videosLoading && youtubeVideos.length > 0 && (
-                  <div>
-                    <h4 className="text-sm md:text-base font-semibold mb-3">More uploads</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      {youtubeVideos.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setSelectedVideo(v)}
-                          className={`group rounded-lg overflow-hidden border border-white/10 ${
-                            selectedVideo?.id === v.id ? "ring-2 ring-white/20" : ""
-                          }`}
-                        >
-                          <div className="relative aspect-video">
-                            <img
-                              src={v.thumbnail}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                              alt={v.title}
-                            />
-                          </div>
-                          <div className="p-2">
-                            <div className="text-xs uppercase opacity-70">{v.category}</div>
-                            <div className="mt-1 text-sm font-medium">{v.title}</div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </motion.section>
-            )}
-          </AnimatePresence>
-        </div>
+        <ProjectTabs
+          developmentProjects={projects.map((project) => ({
+            id: project.id,
+            card: <ProjectCard project={project} />,
+          }))}
+        />
       </section>
 
       {/* CTA */}

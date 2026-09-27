@@ -13,7 +13,6 @@ const links = {
     { label: "Instagram", href: "https://www.instagram.com/_om_khorwal/ ", external: true },
     { label: "Youtube", href: "https://www.youtube.com/@Om_Khorwal", external: true },
     { label: "Linkedin", href: "https://www.linkedin.com/in/om-khorwal-698281129/", external: true },
-    { label: "Anime (Ani-ike)", href: "https://anime.theokcompany.in", external: true },
   ],
 };
 
