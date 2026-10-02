@@ -193,7 +193,7 @@ export default function ContactPage() {
               </div>
             </a>
 
-            <
+            <a
               href="https://github.com/om-khorwal"
               target="_blank"
               rel="noreferrer"
