@@ -32,7 +32,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/theokcompanylogo.png"
-            alt="theokcompany logo"
+            alt="OKbuilds logo"
             width={28}
             height={28}
             className="rounded-md"

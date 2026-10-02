@@ -6,8 +6,8 @@ import Header from "../app/components/header";
 import Footer from "../app/components/footer";
 
 export const metadata: Metadata = {
-  title: "theokcompany - Om Khorwal",
-  description: "Modern web experiences and cinematic edits. theokcompany.in by Om Khorwal.",
+  title: "OKbuilds - Om Khorwal",
+  description: "Modern web experiences and cinematic edits. OKbuilds by Om Khorwal.",
   icons: {
     icon: [{ url: "/theokcompanylogo.png", rel: "icon", type: "image/png" }],
   },
