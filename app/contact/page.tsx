@@ -169,9 +169,31 @@ export default function ContactPage() {
               </div>
             </a>
 
-            
+            <a
+              href="https://wa.me/918561863828"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 rounded-xl px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-white/20"
+            >
+              <WhatsAppIcon />
+              <div className="text-sm">
+                <div className="leading-none">WhatsApp</div>
+                <div className="text-xs opacity-60">+91 85618 63828</div>
+              </div>
+            </a>
 
             <a
+              href="tel:+918561863828"
+              className="flex items-center gap-3 rounded-xl px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-white/20"
+            >
+              <PhoneIcon />
+              <div className="text-sm">
+                <div className="leading-none">Phone</div>
+                <div className="text-xs opacity-60">+91 85618 63828</div>
+              </div>
+            </a>
+
+            <
               href="https://github.com/om-khorwal"
               target="_blank"
               rel="noreferrer"
@@ -263,6 +285,22 @@ function LinkedInIcon() {
     <svg className="w-5 h-5 flex-none" viewBox="0 0 24 24" fill="none" aria-hidden>
       <rect x="2" y="2" width="20" height="20" rx="2.5" stroke="currentColor" strokeWidth="1.2" />
       <path d="M6.5 9.5v7M6.5 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM10.5 16.5V11c0-.9.7-1.5 1.6-1.5s1.6.6 1.6 1.5v5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg className="w-5 h-5 flex-none" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.06L2 22l5.09-1.34A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm4.93 13.57c-.2.56-1.18 1.07-1.62 1.14-.4.06-.91.08-1.47-.09-.34-.1-.77-.24-1.33-.47-2.32-.99-3.84-3.3-3.96-3.46-.12-.16-.95-1.26-.95-2.4s.6-1.7.81-1.93c.21-.23.46-.29.61-.29l.44.01c.14 0 .33-.05.51.39.2.47.67 1.62.73 1.74.06.12.1.26.02.42-.08.16-.12.26-.24.4-.12.14-.25.31-.36.42-.12.12-.24.25-.1.48.14.23.61.99 1.31 1.6.9.8 1.66 1.05 1.9 1.17.23.12.37.1.51-.06.14-.16.58-.67.73-.9.15-.23.3-.19.51-.11.21.08 1.32.62 1.55.74.23.12.38.18.44.28.06.1.06.56-.14 1.12z"/>
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg className="w-5 h-5 flex-none" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C9.6 21 3 14.4 3 6c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
